@@ -751,8 +751,8 @@ export default function App() {
 
             <div className="space-y-5">
               <div className="space-y-2">
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.06]">
-                  Mission Architect
+                <h1 className="font-space text-3xl sm:text-5xl lg:text-6xl font-extrabold uppercase tracking-[0.12em] bg-gradient-to-r from-white via-cyan-100 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_24px_rgba(34,211,238,0.28)] leading-[1.1]">
+                  PROJECT AEGIS
                 </h1>
                 <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-xl">
                   Design real NASA rockets &amp; Earth-scanning satellites, solve space problems, explore worlds, and keep Earth healthy!
@@ -852,8 +852,8 @@ export default function App() {
                 <circle cx="18" cy="18" r="5" fill="#22D3EE" />
               </svg>
               <div>
-                <div className="text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
-                  Mission Architect
+                <div className="font-space text-sm sm:text-base font-bold uppercase tracking-[0.12em] text-white group-hover:text-cyan-300 transition-colors">
+                  PROJECT AEGIS
                 </div>
                 <div className="text-[11px] font-mono text-slate-400">
                   {isLiveNasa ? 'Live NASA EONET Connected' : nasaFeedLabel}
@@ -1861,7 +1861,7 @@ export default function App() {
                   <div>
                     <div className="text-xs font-mono uppercase text-violet-300 flex items-center gap-1.5">
                       <Radio className="w-3.5 h-3.5" />
-                      Project Aegis · 5-Chapter Story ({Math.min(save.storyStep, 5)} / 5 Cleared)
+                      <span className="font-space tracking-wider text-violet-200">PROJECT AEGIS</span> · 5-Chapter Story ({Math.min(save.storyStep, 5)} / 5 Cleared)
                     </div>
                     <h2 className="text-xl font-bold text-white mt-0.5">
                       {save.storyStep >= STORY_CHAPTERS.length
@@ -2353,7 +2353,7 @@ export default function App() {
       {showCampaignFinale && (
         <MissionEndingModal
           mode="campaign"
-          title="Project Aegis · Guardians of the Pale Blue Dot"
+          title="PROJECT AEGIS · Guardians of the Pale Blue Dot"
           subtitle="Grand Campaign Finale · Chapters 1–5 Complete"
           destinationId="MARS"
           outcome="success"

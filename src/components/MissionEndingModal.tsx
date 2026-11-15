@@ -289,7 +289,7 @@ export function MissionEndingModal({
 
   const endingBannerTitle =
     mode === 'campaign'
-      ? 'Project Aegis Complete: Guardians of Earth'
+      ? 'PROJECT AEGIS Complete: Guardians of Earth'
       : outcome === 'success'
         ? 'Mission Accomplished!'
         : outcome === 'partial'

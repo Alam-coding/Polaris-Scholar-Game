@@ -3,6 +3,7 @@
 @layer base {
   :root {
     --font-display: "Outfit", system-ui, sans-serif;
+    --font-space: "Orbitron", "Outfit", system-ui, sans-serif;
     --font-body: "IBM Plex Sans", system-ui, sans-serif;
     --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
     color-scheme: dark;
@@ -20,6 +21,10 @@
 
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
+  }
+
+  .font-space {
+    font-family: var(--font-space);
   }
 
   .font-mono {

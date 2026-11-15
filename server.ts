@@ -719,11 +719,11 @@ async function startServer() {
   }
 
   server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Mission Architect server listening on http://0.0.0.0:${PORT}`);
+    console.log(`PROJECT AEGIS server listening on http://0.0.0.0:${PORT}`);
   });
 }
 
 startServer().catch((err) => {
-  console.error('Failed to start Mission Architect server:', err);
+  console.error('Failed to start PROJECT AEGIS server:', err);
   process.exit(1);
 });

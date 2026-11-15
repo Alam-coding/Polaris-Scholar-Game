@@ -91,7 +91,7 @@ const PROLOGUE_SCENES: PrologueScene[] = [
     durationMs: 7600,
     narration:
       'Ground stations at Goldstone, Canberra, Madrid, and Svalbard are locked on. Steer antennas through space weather storms, protect Earth’s living systems, and chart the route to the Moon and Mars.',
-    subNote: 'Prepare for Mission Architect Command initialization.',
+    subNote: 'Prepare for PROJECT AEGIS Command initialization.',
   },
 ];
 
@@ -496,14 +496,14 @@ export function PrologueCutsceneModal({
       className="fixed inset-0 z-50 bg-black flex flex-col justify-between select-none"
       role="dialog"
       aria-modal="true"
-      aria-label="Project Aegis Opening Cutscene"
+      aria-label="PROJECT AEGIS Opening Cutscene"
       onPointerDown={() => soundEngine.unlockAndStart()}
     >
       {/* Top Cinema Letterbox Matte Bar */}
       <div className="bg-black border-b border-slate-900 px-5 sm:px-8 py-3 flex flex-wrap items-center justify-between gap-3 z-10">
         <div className="flex items-center gap-3 text-xs font-mono tabular-nums">
           <Radio className="w-4 h-4 text-cyan-400 shrink-0" />
-          <span className="text-white font-bold tracking-widest uppercase">
+          <span className="font-space text-white font-bold tracking-[0.14em] uppercase">
             PROJECT AEGIS
           </span>
           <span className="text-slate-600">//</span>
@@ -703,7 +703,7 @@ export function PrologueCutsceneModal({
                 ) : isLast ? (
                   <>
                     <Play className="w-3.5 h-3.5 fill-current" />
-                    Launch Mission Architect [Space]
+                    Launch PROJECT AEGIS [Space]
                   </>
                 ) : (
                   <>

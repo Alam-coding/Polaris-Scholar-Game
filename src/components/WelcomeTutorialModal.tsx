@@ -27,7 +27,7 @@ const STEPS = [
     kicker: 'Guide 1 of 5 · Pick Your Adventure',
     title: 'Two Ways to Play: Rocket or Satellite',
     summary:
-      'Mission Architect has two connected modes: fly rockets from Earth to the Moon & Mars, or craft satellites to scan Earth hazards from orbit.',
+      'PROJECT AEGIS has two connected modes: fly rockets from Earth to the Moon & Mars, or craft satellites to scan Earth hazards from orbit.',
   },
   {
     id: 'sat-craft',

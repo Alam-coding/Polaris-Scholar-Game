@@ -218,7 +218,7 @@ export function downloadMissionCertificate(params: {
   // Header
   ctx.fillStyle = '#22D3EE';
   ctx.font = 'bold 18px monospace';
-  ctx.fillText('NASA SPACE APPS CHALLENGE · MISSION ARCHITECT', 72, 92);
+  ctx.fillText('NASA SPACE APPS CHALLENGE · PROJECT AEGIS', 72, 92);
 
   ctx.fillStyle = '#FFFFFF';
   ctx.font = 'bold 42px sans-serif';
