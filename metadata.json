@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix Mission Architect: Space \u0026 Earth Observer",
+  "description": "An interactive aerospace engineering and Earth-observation simulation game built for the NASA Space Apps Challenge. Design multi-stage rockets, pilot orbital launches, build custom satellites, and operate live Earth-sensing instruments.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,411 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Mission Director — Space Mission Design Game</title>
+<style>
+:root{color-scheme:dark;--bg:#0B0F17;--p:#131B29;--p2:#1B263B;--ln:#273752;--tx:#E2E8F0;--mu:#8A9BB5;--cy:#00E5FF;--bl:#00E5FF;--ok:#10B981;--wa:#FFB300;--er:#FF4D4D;--mono:'JetBrains Mono','Fira Code',ui-monospace,monospace;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:linear-gradient(rgba(0,229,255,.05) 1px,transparent 1px) 0 0/32px 32px,linear-gradient(90deg,rgba(0,229,255,.05) 1px,transparent 1px) 0 0/32px 32px,var(--bg);color:var(--tx);font-variant-numeric:tabular-nums;font:14.5px/1.55 "IBM Plex Sans","Segoe UI",system-ui,sans-serif;min-height:100vh;padding-bottom:110px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--p)}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--p);border-bottom:1px solid var(--ln);display:flex;gap:2px;overflow-x:auto;padding:6px 10px;align-items:center}
+nav b{color:var(--cy);letter-spacing:.14em;font-size:12px;margin-right:10px;white-space:nowrap}
+nav button{background:none;border:0;color:var(--mu);padding:8px 12px;border-radius:6px;cursor:pointer;white-space:nowrap;font:inherit;font-size:13px}
+nav button.on{background:var(--p2);color:var(--cy)}
+main{max-width:1100px;margin:0 auto;padding:18px 14px}
+h1,h2,h3{margin:0 0 8px;font-weight:600}h1{font-size:28px}h2{font-size:20px;color:var(--cy)}h3{font-size:15px}
+.g{display:grid;gap:12px}.g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.lay{display:grid;grid-template-columns:1fr 320px;gap:14px}@media(max-width:820px){.lay{grid-template-columns:1fr}}
+.card{background:var(--p);border:1px solid var(--ln);border-radius:10px;padding:14px}
+.card.sel{border-color:var(--cy);box-shadow:0 0 0 1px var(--cy)}.card.btn{cursor:pointer;transition:.15s}.card.btn:hover{border-color:var(--bl)}
+.sticky{position:sticky;top:60px;align-self:start}
+button.b{background:var(--bl);color:#fff;border:0;border-radius:8px;padding:10px 16px;font:inherit;font-weight:600;cursor:pointer}
+button.b.alt{background:transparent;border:1px solid var(--cy);color:var(--cy)}button.b:disabled{opacity:.4;cursor:not-allowed}
+.mu{color:var(--mu)}small{color:var(--mu);font-size:12px;display:block}.tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:99px;border:1px solid var(--ln);color:var(--mu);margin:2px 3px 0 0}
+.tag.hit{border-color:var(--cy);color:var(--cy)}.ok{color:var(--ok)}.wa{color:var(--wa)}.er{color:var(--er)}
+.mt{margin-bottom:11px}.mh{display:flex;justify-content:space-between;font-size:13px}.bar{height:8px;background:var(--p2);border-radius:5px;overflow:hidden;margin-top:3px}
+.bar i{display:block;height:100%;border-radius:5px;transition:width .3s}.bar i.ok{background:var(--ok)}.bar i.wa{background:var(--wa)}.bar i.er{background:var(--er)}
+.stack{display:flex;height:16px;border-radius:5px;overflow:hidden;margin:6px 0}.stack i{display:block}
+.warn{padding:7px 10px;border-radius:6px;font-size:13px;margin-bottom:6px;border-left:3px solid}.warn.er{background:color-mix(in srgb,var(--er) 12%,transparent);border-color:var(--er)}.warn.wa{background:color-mix(in srgb,var(--wa) 12%,transparent);border-color:var(--wa)}.warn.ok{background:color-mix(in srgb,var(--ok) 12%,transparent);border-color:var(--ok)}
+.pill{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cy)}
+.opt{display:flex;justify-content:space-between;gap:8px}.opt small{margin:0}
+.st{display:flex;gap:10px;padding:10px;border:1px solid var(--ln);border-radius:8px;margin-bottom:8px;opacity:.55}.st.run{opacity:1;border-color:var(--cy)}.st.ok,.st.warn,.st.fail{opacity:1}.st.ok{border-color:var(--ok)}.st.warn{border-color:var(--wa)}.st.fail{border-color:var(--er)}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--ln);margin-top:5px;flex:none}.st.run .dot{background:var(--cy);animation:pl 1s infinite}.st.ok .dot{background:var(--ok)}.st.warn .dot{background:var(--wa)}.st.fail .dot{background:var(--er)}
+@keyframes pl{50%{opacity:.3}}@keyframes rise{from{transform:translateY(0)}to{transform:translateY(-70px)}}
+.sc .sat,.sc .bm{opacity:0}.sc .rk{opacity:0}.sc.g0:not(.g1) .rk{opacity:1;animation:rise 1.6s linear infinite}.sc.g2 .sat{opacity:1}.sc.g3 .sat{fill:#fff}.sc.g5 .bm{opacity:1;animation:dash 1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-12}}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{padding:6px 4px;border-bottom:1px solid var(--ln);text-align:left}
+#nova{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--p);border-top:2px solid var(--cy);padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));display:none}
+#nova .in{max-width:1100px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}#nova p{margin:0;flex:1;min-width:220px;font-size:14px}
+.av{width:36px;height:36px;border-radius:50%;background:radial-gradient(var(--cy),var(--bl));flex:none;box-shadow:0 0 14px var(--cy)}
+.score{font-size:54px;font-weight:700;color:var(--cy);line-height:1}
+footer{text-align:center;color:var(--mu);font-size:12px;padding:10px}
+.card,.warn,.st,.stack,.bar,.bar i,button.b,.tag{border-radius:2px}
+h1{font-weight:600;letter-spacing:-.01em;font-size:26px}
+h2{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--mu);border-bottom:1px solid var(--ln);padding-bottom:6px;margin-bottom:12px}
+h3{font-size:14px}
+nav{padding:0 10px}nav b{color:var(--tx);font-family:var(--mono);font-weight:500}
+nav button{border-radius:0;padding:12px 12px}nav button.on{background:none;color:var(--tx);box-shadow:inset 0 -2px var(--cy)}
+.card.sel{box-shadow:none;border-left:3px solid var(--cy)}.card.btn:hover{background:var(--p2)}
+small,.mh b,td,th,.tag,.pill,.score{font-family:var(--mono)}small{font-size:11.5px}.pill{color:var(--mu);letter-spacing:.06em}
+.warn.er,.warn.wa,.warn.ok{background:transparent;font-size:12.5px}
+.dot{border-radius:1px}#nova{border-top:1px solid var(--cy)}
+.av{border-radius:2px;background:var(--p2);box-shadow:none;border:1px solid var(--cy);display:grid;place-items:center;font:500 14px var(--mono);color:var(--cy)}.av::after{content:"N"}
+main{max-width:none;padding:12px}.lay{grid-template-columns:1fr 400px;gap:12px}@media(max-width:900px){.lay{grid-template-columns:1fr}}
+.card{background:var(--p);border:1px solid var(--ln);box-shadow:0 2px 8px rgba(0,0,0,.35)}.card:not(.sticky){position:relative}.card::before,.card::after{content:'+';position:absolute;font:11px/1 var(--mono);color:var(--cy);opacity:.6;pointer-events:none}.card::before{top:-6px;left:-4px}.card::after{bottom:-6px;right:-4px}.card.hl{border-color:var(--cy)}
+button.b{background:var(--cy);color:#0B0F17;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:11px;border:1px solid var(--cy);box-shadow:0 0 12px rgba(0,229,255,.25)}button.b:active{transform:translateY(1px);box-shadow:inset 0 2px 4px rgba(0,0,0,.45)}button.b.alt{background:transparent;color:var(--mu);border:1px solid var(--ln);box-shadow:none}button.b.alt:hover{color:var(--tx);border-color:var(--mu)}button.b:disabled{box-shadow:none}
+.pill,th,.lb,label,.mh span{font-size:10px;letter-spacing:.08em;text-transform:uppercase}label{display:flex;justify-content:space-between;margin-top:8px;color:var(--mu)}input[type=range]{width:100%;accent-color:var(--cy)}
+.seg{display:flex;gap:2px;margin-top:4px}.seg i{flex:1;height:9px;background:var(--p2);border:1px solid var(--ln)}.seg i.ok{background:var(--ok);border-color:var(--ok)}.seg i.wa{background:var(--wa);border-color:var(--wa)}.seg i.er{background:var(--er);border-color:var(--er)}
+.sw{width:36px;height:16px;border:1px solid var(--ln);background:#0B0F17;position:relative;flex:none}.sw i{position:absolute;top:1px;left:1px;width:15px;height:12px;background:var(--mu);transition:.12s}.sw.on{border-color:var(--cy)}.sw.on i{left:18px;background:var(--cy)}
+.space{position:relative;overflow:hidden;background:#06090f;border:1px solid var(--ln);--px:0;--py:0}.space i{position:absolute;inset:-20px;pointer-events:none}.space svg,#sch{position:relative;z-index:1}
+.space .l1{background-image:radial-gradient(1px 1px at 12px 20px,rgba(255,255,255,.35),transparent),radial-gradient(1px 1px at 70px 90px,rgba(255,255,255,.3),transparent),radial-gradient(1px 1px at 120px 40px,rgba(255,255,255,.25),transparent);background-size:140px 120px;transform:translate(calc(var(--px)*4px),calc(var(--py)*4px))}
+.space .l2{background-image:radial-gradient(1.6px 1.6px at 30px 60px,#fff,transparent),radial-gradient(1.4px 1.4px at 160px 110px,#bfe9ff,transparent);background-size:220px 170px;transform:translate(calc(var(--px)*10px),calc(var(--py)*10px))}
+.space .nb{background:radial-gradient(ellipse 40% 30% at 25% 30%,rgba(76,50,160,.22),transparent),radial-gradient(ellipse 35% 25% at 75% 60%,rgba(0,120,180,.18),transparent);transform:translate(calc(var(--px)*16px),calc(var(--py)*16px))}
+.space .hz{inset:auto -10% -64% -10%;height:70%;border-radius:50%;background:radial-gradient(ellipse at 50% 0,#1E3A8A,#0a1a3d 60%);box-shadow:0 -2px 18px 2px rgba(0,229,255,.5),0 -8px 40px #1E3A8A;transform:translate(calc(var(--px)*-6px),0)}
+.space::after{content:'';position:absolute;inset:0;z-index:2;background:repeating-linear-gradient(0deg,rgba(0,229,255,.035) 0 1px,transparent 1px 3px);pointer-events:none}
+#sch svg{width:100%;display:block}.lb{font:8px var(--mono);fill:var(--mu)}.part{cursor:pointer}.part.hl{filter:drop-shadow(0 0 3px #00E5FF)}.con{stroke:#3b4d6b;stroke-dasharray:3 3;opacity:.5}.part.hl .con{stroke:#00E5FF;opacity:1}.node{fill:#0B0F17;stroke:#00E5FF}.part.hl .node{animation:pl .7s infinite}
+.plume{transform-box:fill-box;transform-origin:50% 0;animation:fl .12s infinite alternate}@keyframes fl{from{transform:scaleY(.88) scaleX(.95)}to{transform:scaleY(1.1) scaleX(1.05)}}
+.fire-arr .arrL{transform-box:fill-box;transform-origin:100% 50%;animation:unf 1.6s}.fire-arr .arrR{transform-box:fill-box;transform-origin:0 50%;animation:unf 1.6s}@keyframes unf{from{transform:scaleX(.1)}}
+#tip{position:fixed;z-index:30;pointer-events:none;background:var(--p);border:1px solid var(--cy);padding:8px 10px;font:11px/1.5 var(--mono);display:none;max-width:240px}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--ln);border:1px solid var(--ln);margin-top:10px}.tg div{background:var(--p);padding:5px 6px}.tg small{font-size:9.5px;text-transform:uppercase}.tg b{display:block;font:500 13px var(--mono)}
+.sq{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:8px}.sq div{flex:1;min-width:70px;border:1px solid var(--ln);padding:4px;background:var(--p2);text-align:center;font:10px var(--mono)}.sq button{background:none;border:0;color:var(--mu);cursor:pointer;font:10px var(--mono);padding:2px 3px}.sq button:hover{color:var(--cy)}
+.spd{display:flex}.spd button{flex:1;background:var(--p2);border:1px solid var(--ln);color:var(--mu);padding:6px;font:11px var(--mono);cursor:pointer}.spd button.on{background:var(--cy);color:#0B0F17;font-weight:700}
+
+#vid,#king{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:18px;text-align:center;background:radial-gradient(ellipse at 50% 30%,#14204a,#05070f 70%)}
+#king{z-index:60;background:rgba(3,5,12,.86)}#vid.on,#king.on{display:flex}
+#vid .bx,#king .bx{max-width:640px;width:100%}#vid h1{font-size:30px;margin:8px 0;letter-spacing:.04em;color:#f5d98b}
+#vid .cap{font-size:17px;line-height:1.6;min-height:110px;font-style:italic}#vid .pg{height:4px;background:#1b2750;border-radius:3px;margin:14px 0;overflow:hidden}#vid .pg i{display:block;height:100%;width:0;background:#f5d98b}
+.vis{height:130px;display:flex;align-items:center;justify-content:center;gap:10px}.rk{width:26px;height:64px;background:linear-gradient(#e8eefc,#7aa2ff);border-radius:14px 14px 4px 4px;animation:rise 3s ease-in infinite;box-shadow:0 22px 14px -6px #ffb347}
+@keyframes rise{from{transform:translateY(60px);opacity:1}to{transform:translateY(-80px);opacity:.1}}
+.chp{padding:8px 14px;border:1px solid #f5d98b;border-radius:20px;color:#f5d98b;opacity:0;animation:fi .6s forwards}.chp:nth-child(2){animation-delay:1.8s}.chp:nth-child(3){animation-delay:3.6s}@keyframes fi{to{opacity:1}}
+.mb{width:70px;height:90px;border:1px solid var(--ln);border-radius:6px;display:flex;align-items:flex-end}.mb i{display:block;width:100%;background:var(--cy);animation:gr 4s ease-in-out infinite alternate}.mb:nth-child(2) i{animation-delay:.5s;background:#fbbf24}.mb:nth-child(3) i{animation-delay:1s;background:#f87171}@keyframes gr{from{height:15%}to{height:100%}}
+.cr{font-size:64px;color:#f5d98b}
+#king .bx{border:1px solid #f5d98b;border-radius:12px;padding:22px;background:var(--p)}#king.roast .bx{border-color:#f87171;box-shadow:0 0 40px #f8717155}
+#king h3{color:#f5d98b;letter-spacing:.08em;margin:0 0 10px}#king.roast h3{color:#f87171}#king p{font-size:16px;line-height:1.65;font-style:italic;margin:0 0 16px}
+
+#spot{position:fixed;z-index:25;display:none;pointer-events:none;border:3px solid #f5d98b;border-radius:10px;box-shadow:0 0 0 9999px rgba(3,5,12,.55),0 0 26px #f5d98b;animation:pl 1s infinite}
+#spot::after{content:attr(data-l);position:absolute;left:0;top:-30px;background:#f5d98b;color:#111;font:700 12px var(--mono);padding:3px 9px;border-radius:5px;white-space:nowrap}#spot.dn::after{top:auto;bottom:-30px}
+@keyframes pl{50%{border-color:#fff}}
+#vw{display:none;overflow:hidden;border:1px solid #f5d98b;border-radius:8px;margin-bottom:10px;text-align:left}#vf{width:1000px;height:600px;overflow:hidden;transform-origin:0 0;pointer-events:none;background:var(--bg)}#vf nav{position:static}
+.hlt{outline:4px solid #f5d98b;outline-offset:3px;box-shadow:0 0 30px #f5d98b;animation:pl 1s infinite}
+#nova{z-index:30!important}</style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;600&display=swap"><script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script></head><body>
+<nav id="nav"></nav><main id="app"></main>
+<footer>Sample game data: parameters are simplified and illustrative, not NASA measurements. Real datasets from data.nasa.gov plug into the DATASETS registry.</footer>
+<div id='tip'></div><div id="nova"><div class="in"><div class="av"></div><p id="nt"></p><small id="ns"></small><button class="b alt" data-a="tskip">Skip</button><button class="b" id="nn" data-a="tnext">Continue</button></div></div>
+<div id="vid"><div class="bx"><div id="v0"><h1>♛ MISSION DIRECTOR</h1><p class="cap" style="min-height:0">A royal briefing awaits. Turn your sound on, Director.</p><button class="b" data-a="vstart">Enter the Royal Briefing</button> <button class="b alt" data-a="vskip">Skip to the game</button></div><div id="v1" style="display:none"><div id="vw"><div id="vf"></div></div><div class="vis" id="vv"></div><h1 id="vt"></h1><p class="cap" id="vc"></p><div class="pg"><i id="vp"></i></div><button class="b alt" data-a="vskip">Skip video</button></div></div></div>
+<div id="spot"></div><div id="king"><div class="bx"><h3 id="kh"></h3><p id="kt"></p><button class="b" data-a="kclose">Return to the drawing board</button></div></div>
+<script>
+const $=s=>document.querySelector(s),clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),f1=n=>Math.round(n*10)/10,sum=(a,k)=>a.reduce((s,x)=>s+x[k],0);
+const GOAL={imaging:'Surface imaging',atmo:'Atmospheric composition',climate:'Climate monitoring',solar:'Solar corona observation',particles:'Energetic particle environment',magnet:'Magnetic field mapping',ice:'Water-ice detection',maps:'Surface mapping',thermal:'Thermal mapping'};
+const MIS=[
+{id:'zero',n:'Mission Zero: First Light',t:'Low Earth Orbit',b:170,d:120,df:'Tutorial',o:['LEO','SSO'],g:['imaging'],x:'Capture your first images of Earth from orbit.'},
+{id:'earth',n:'Earth Atmosphere Observer',t:'Earth (LEO, SSO or GEO)',b:260,d:365,df:'Beginner',o:['LEO','SSO','GEO'],g:['atmo','imaging','climate'],x:'Design a spacecraft capable of observing Earth’s atmosphere and monitoring environmental changes.'},
+{id:'sun',n:'Solar Storm Sentinel',t:'Sun–Earth L1 point',b:330,d:540,df:'Intermediate',o:['L1'],g:['solar','particles','magnet'],x:'Watch the Sun from the L1 vantage point and give early warning of space weather.'},
+{id:'moon',n:'Lunar Ice Prospector',t:'Moon (lunar orbit)',b:400,d:365,df:'Advanced',o:['LUNAR'],g:['maps','ice','thermal'],x:'Map the Moon’s surface and search for water-ice deposits.'}];
+const INS=[
+{id:'img',n:'Multispectral Imager',m:25,p:35,c:30,d:40,s:8,k:['imaging','maps']},
+{id:'snd',n:'Atmospheric Sounder',m:30,p:45,c:40,d:15,s:10,k:['atmo','climate']},
+{id:'lid',n:'Aerosol Lidar',m:40,p:60,c:45,d:10,s:9,k:['atmo','maps']},
+{id:'rad',n:'Thermal Radiometer',m:15,p:20,c:20,d:3,s:6,k:['climate','thermal']},
+{id:'cor',n:'Solar Coronagraph',m:35,p:30,c:50,d:25,s:10,k:['solar']},
+{id:'par',n:'Particle Detector',m:12,p:10,c:18,d:2,s:7,k:['particles']},
+{id:'mag',n:'Magnetometer',m:5,p:4,c:8,d:1,s:6,k:['magnet']},
+{id:'neu',n:'Neutron Spectrometer',m:15,p:18,c:28,d:4,s:9,k:['ice']}];
+const CMP={
+power:{n:'Power system',u:'W gen',o:[{id:'a',n:'Small solar arrays',g:120,m:20,c:8},{id:'b',n:'Medium arrays + Li-ion',g:250,m:35,c:15},{id:'c',n:'Large solar arrays',g:450,m:60,c:26}]},
+comms:{n:'Communication',o:[{id:'a',n:'UHF radio',r:8,p:8,m:3,c:4},{id:'b',n:'S-band',r:40,p:15,m:8,c:10},{id:'c',n:'X-band',r:150,p:30,m:14,c:20},{id:'d',n:'Ka-band',r:400,p:50,m:20,c:35}]},
+prop:{n:'Propulsion',o:[{id:'a',n:'Cold gas',v:150,m:10,c:4,p:0},{id:'b',n:'Monopropellant',v:500,m:40,c:10,p:0},{id:'c',n:'Bipropellant',v:1700,m:70,c:18,p:0},{id:'d',n:'Ion (electric)',v:3000,m:55,c:40,p:60}]},
+therm:{n:'Thermal control',o:[{id:'a',n:'Passive (MLI)',l:1,m:5,c:3,p:0},{id:'b',n:'Heaters + radiators',l:2,m:12,c:8,p:12},{id:'c',n:'Active fluid loop',l:3,m:25,c:18,p:30}]},
+store:{n:'Data storage',o:[{id:'a',n:'16 GB',s:16,m:1,c:2,p:2},{id:'b',n:'128 GB',s:128,m:3,c:6,p:4},{id:'c',n:'512 GB',s:512,m:6,c:14,p:8}]}};
+const ORB={LEO:{n:'Low Earth Orbit',a:'≈500 km',v:250,k:1,s:.65,c:.3,t:1},SSO:{n:'Sun-synchronous',a:'≈700 km polar',v:400,k:.85,s:.95,c:.35,t:1},GEO:{n:'Geostationary',a:'35,786 km',v:1500,k:.28,s:.9,c:1,t:2},LUNAR:{n:'Lunar orbit',a:'Moon-centred',v:900,k:.3,s:.85,c:.45,t:3},L1:{n:'Sun–Earth L1',a:'≈1.5 million km',v:700,k:.22,s:1,c:.35,t:2}};
+const TR={a:{n:'Direct transfer',v:1,days:5,x:'Fast. Needs full delta-v.'},b:{n:'Low-energy transfer',v:.7,days:60,x:'Needs 30% less delta-v but costs ~2 months of operations.'}};
+const LV=[{id:'a',n:'Light launcher',cap:300,c:15,r:.9},{id:'b',n:'Medium launcher',cap:800,c:40,r:.95},{id:'c',n:'Heavy launcher',cap:2000,c:90,r:.97}];
+const DATASETS=[{id:'env-sample',status:'sample',source:'Game sample parameters (illustrative)',use:'Orbit sunlight fraction, contact time, delta-v and instrument figures are simplified game values, not NASA data.'}];
+// To integrate NASA data: add {status:'nasa',source:'<title>',url:'https://data.nasa.gov/dataset/...',use:'<how it shapes the mission>'} and map its fields into ORB / INS / MIS.
+const STG=['Launch sequence','Spacecraft separation','Orbit insertion','Instrument activation','Scientific data collection','Data transmission','Mission completion'];
+const defComp=()=>({power:'b',comms:'b',prop:'b',therm:'a',store:'b'});
+const S={view:'control',mission:null,inst:[],comp:defComp(),lv:'b',orb:'LEO',traj:'a',result:null,tut:null,tc:{},busy:false,last:null};
+const NAV=[['control','Mission Control'],['briefing','Mission Briefing'],['designer','Spacecraft Designer'],['resources','Resource Management'],['launch','Launch Configuration'],['sim','Simulation'],['report','Mission Reports']];
+const TUT=[
+['control','Welcome, Director. Wherever you see a golden glowing frame, that is precisely where I wish you to look or to click. The bar above holds every stage of your mission, in order.',()=>1,'#nav'],
+['control','Your first act. Click the glowing tab named Mission Briefing.',()=>S.view==='briefing','#nav [data-v="briefing"]',1],
+['briefing','This is your briefing. It states the science goals, the budget and the days available. Every choice you make from here serves these goals. Read it, then press Continue.',()=>1,'#app .card'],
+['briefing','Now to the workshop. Click the glowing tab named Spacecraft Designer.',()=>S.view==='designer','#nav [data-v="designer"]',1],
+['designer','Instruments perform the science. Click the Multispectral Imager, for it suits our goal of imaging the Earth.',()=>S.inst.length>0,'[data-a="inst"][data-i="img"]',1],
+['designer','Observe its figures: mass in kilograms, power in watts, and data in gigabytes per day. Nothing is free. Each figure must be paid for by the rest of the craft.',()=>1,'[data-a="inst"][data-i="img"]'],
+['designer','Now the components. Click any glowing option to swap it in. Heavier or mightier parts cost more mass, power and money, but they perform better.',()=>S.tc.comp,'[data-a="comp"]:not(.sel)',1],
+['designer','These are your live resource meters. Green is safe, amber is dangerously near the limit, and red means the mission will break. They update as you build.',()=>1,'#dsh'],
+['designer','Let us study them properly. Click the glowing tab named Resource Management.',()=>S.view==='resources','#nav [data-v="resources"]',1],
+['resources','Each meter compares what you use against what you have. Mass must fit the rocket, power draw must stay below generation, and the budget must not be exceeded.',()=>1,'.mt|2'],
+['resources','The advanced matter: data. Instruments produce it, storage holds it between ground contacts, and the downlink sends it home. If downlink is red, return to the designer and fit a faster radio.',()=>1,'.mt|4'],
+['resources','On to launch. Click the glowing tab named Launch Configuration.',()=>S.view==='launch','#nav [data-v="launch"]',1],
+['launch','Choose a launch vehicle. Click any glowing card. It must lift your spacecraft mass to the chosen orbit, so a heavier craft needs a mightier rocket.',()=>S.tc.lv,'[data-a="lv"]:not(.sel)',1],
+['launch','Now choose an orbit. It determines the delta-v required, the sunlight you receive, and the contact time with the ground. Click a glowing card.',()=>S.tc.orb,'[data-a="orb"]:not(.sel)',1],
+['launch','The advanced matter: trajectory. A direct transfer is swift but demands more delta-v. A low-energy transfer saves delta-v but consumes more days. Click the glowing card to try the low-energy path.',()=>S.traj==='b','[data-a="traj"]:not(.sel)',1],
+['launch','Time to fly. Click the glowing tab named Simulation.',()=>S.view==='sim','#nav [data-v="sim"]',1],
+['sim','The pre-flight check lists every problem before you launch. Green means go. Amber and red are warnings that you should heed.',()=>1,'.sticky'],
+['sim','Press the glowing button to start the launch sequence, and watch each of the seven stages unfold.',()=>S.result&&!S.busy,'#runb',1],
+['sim','Now click the glowing tab named Mission Reports.',()=>S.view==='report','#nav [data-v="report"]',1],
+['report','Your report explains what worked and what failed. Remember my terms: I shall explain a failure twice, and the third time I shall be merciless. Finish, and choose a full mission.',()=>1]];
+
+function calc(){const M=S.mission,orb=ORB[S.orb],tr=TR[S.traj],lv=LV.find(x=>x.id===S.lv),I=S.inst.map(id=>INS.find(x=>x.id===id)),C={};
+for(const k in CMP)C[k]=CMP[k].o.find(x=>x.id===S.comp[k]);const CL=Object.values(C);
+const mass=120+sum(I,'m')+sum(CL,'m'),cost=20+sum(I,'c')+sum(CL,'c')+lv.c,bus=40+C.comms.p+C.store.p+C.therm.p+C.prop.p,il=sum(I,'p'),gen=C.power.g*orb.s,prod=sum(I,'d'),cap=lv.cap*orb.k,dvN=orb.v*tr.v,dvA=C.prop.v*300/mass*S.fuel/100,down=C.comms.r*orb.c,reqS=prod*.5/orb.c;
+return{M,orb,tr,lv,I,C,mass,cost,bus,il,gen,prod,cap,dvN,dvA,down,reqS}}
+function warns(c){const w=[],{M}=c,a=(l,t)=>w.push({l,t});
+if(!c.I.length)a('er','No instruments selected: nothing to measure.');
+if(c.cost>M.b)a('er',`Budget exceeded by $${f1(c.cost-M.b)}M. Mission cannot be approved.`);
+if(c.mass>c.cap)a('er',`Mass ${f1(c.mass)} kg exceeds launcher capacity ${f1(c.cap)} kg for this orbit.`);else if(c.mass>c.cap*.92)a('wa','Launch mass margin is under 8%.');
+if(c.dvA<c.dvN)a('er',`Delta-v short: need ${f1(c.dvN)} m/s, have ${f1(c.dvA)} m/s.`);
+if(!M.o.includes(S.orb))a('er','This orbit cannot meet the mission target. Science goals will fail.');
+if(c.bus+c.il>c.gen)a('wa',`Power shortfall (${f1(c.bus+c.il)} W needed, ${f1(c.gen)} W available). Lower-priority instruments will switch off.`);
+if(c.C.therm.l<c.orb.t)a('wa','Thermal control is too weak for this orbit; instruments will run degraded.');
+if(c.reqS>c.C.store.s)a('wa','Storage too small to buffer data between contacts.');
+if(c.prod>c.down)a('wa',`Comms limit: ${f1(c.down)} of ${f1(c.prod)} GB/day can be downlinked.`);
+M.g.forEach(k=>{if(!c.I.some(i=>i.k.includes(k)))a('wa','No instrument covers goal: '+GOAL[k]+'.')});
+return w}
+function evaluate(){const c=calc(),{M,orb,lv,C}=c,st=[],fit=M.o.includes(S.orb),margin=(c.cap-c.mass)/c.cap;let dead=false;
+const push=(l,t)=>{st.push({l:dead?'skip':l,t:dead?'Not reached.':t});if(l==='fail')dead=true};
+push(margin<0?'fail':margin<.08?'warn':'ok',`${f1(c.mass)} kg vs ${f1(c.cap)} kg capacity (${lv.n} to ${orb.n}); margin ${Math.round(margin*100)}%.${margin<0?' Too heavy: the vehicle cannot reach this orbit.':''}`);
+push('ok',`Clean separation; arrays and antennas deployed. Launcher design reliability: ${Math.round(lv.r*100)}%.`);
+const ratio=c.dvA/c.dvN;push(ratio<1?'fail':(ratio<1.15||!fit)?'warn':'ok',`Delta-v needed ${f1(c.dvN)} m/s, available ${f1(c.dvA)} m/s (${S.traj==='b'?'low-energy':'direct'} transfer).${ratio<1?' Spacecraft strands short of its orbit.':''}${!fit?' Orbit does not match the mission target; science will be severely limited.':''}`);
+let avail=c.gen-c.bus;const tf=C.therm.l>=orb.t?1:C.therm.l===orb.t-1?.6:.3;
+const ins=c.I.map(i=>{const on=avail>=i.p;if(on)avail-=i.p;return{i,on,tf}}),act=ins.filter(x=>x.on);
+push(!c.I.length||!act.length?'fail':(act.length<ins.length||tf<1)?'warn':'ok',!c.I.length?'No instruments aboard.':`${act.length}/${ins.length} instruments powered (${f1(c.gen)} W generated, ${f1(c.bus)} W bus load).${tf<1?` Thermal rating below orbit needs: instruments at ${Math.round(tf*100)}% quality.`:''}`);
+const prod=sum(act.map(x=>x.i),'d'),sEff=prod?Math.min(1,C.store.s/(prod*.5/orb.c)):0;
+push(prod?(sEff<1?'warn':'ok'):'fail',`Produced ${f1(prod)} GB/day; storage buffers ${Math.round(sEff*100)}% of it between ground contacts.`);
+const delivered=Math.min(prod*sEff,c.down),frac=prod?delivered/prod:0;
+push(frac>=.7?'ok':frac>=.1?'warn':'fail',`Downlink ${f1(c.down)} GB/day; delivered ${f1(delivered)} GB/day (${Math.round(frac*100)}% of production).`);
+const q=x=>clamp(frac,0,1)*x.tf*(fit?1:.15);
+const goals=M.g.map(k=>{const b=Math.max(0,...act.filter(x=>x.i.k.includes(k)).map(q)),v=b>=.6?1:b>=.25?.5:0;return{k,v,b}});
+const opsF=Math.max(0,(M.d-c.tr.days)/M.d),sr=Math.round(goals.reduce((s,g)=>s+g.v,0)/goals.length*100*(.8+.2*opsF)),out=dead?'fail':sr>=75?'success':sr>=25?'partial':'fail';
+st.push({l:dead?'skip':out==='success'?'ok':out==='partial'?'warn':'fail',t:dead?'Mission lost before completion.':`${sr}% of science objectives achieved over ${Math.round(M.d-c.tr.days)} operating days.`});
+const sRel=clamp((lv.r-.85)/.12,0,1),rem=M.b-c.cost;
+const sc=sr*.5+(rem<0?0:5+5*clamp(rem/(M.b*.3),0,1))+5*clamp(c.gen/((c.bus+c.il)*1.1),0,1)+15*frac+5*clamp(margin/.1,0,1)+5*clamp((ratio-1)/.15,0,1)+5*sRel+5*sEff;
+const score=Math.round(dead?Math.min(sc,30):sc);
+return{c,st,ins,goals,sr,out,score,frac,sEff,margin,ratio,dead,prod,delivered,tf,opsF,fit}}
+
+const meter=(l,u,cap,unit,note='')=>{const r=u/cap,k=r>1?'er':r>.85?'wa':'ok';return`<div class="mt"><div class="mh"><span>${l}</span><b class="${k}">${f1(u)} / ${f1(cap)} ${unit}</b></div><div class='seg'>${Array.from({length:20},(_,i)=>`<i class='${i<Math.ceil(clamp(r,0,1)*20)?k:''}'></i>`).join('')}</div>${note?`<small>${note}</small>`:''}</div>`};
+function dash(c){const w=warns(c);return meter('Budget',c.cost,c.M.b,'$M')+meter('Spacecraft mass',c.mass,c.cap,'kg','Launcher capacity for this orbit')+meter('Power draw',c.bus+c.il,c.gen,'W','Orbit-averaged generation')+meter('Storage needed',c.reqS,c.C.store.s,'GB','Buffer between ground contacts')+meter('Data vs downlink',c.prod,c.down,'GB/day','Communication capacity')+meter('Delta-v needed',c.dvN,c.dvA,'m/s','Propulsion capability')+(w.length?w.map(x=>`<div class="warn ${x.l}">${x.t}</div>`).join(''):'<div class="warn ok">All constraints satisfied.</div>')}
+function stackBar(items){const t=sum(items,'v'),col=['#22d3ee','#3b82f6','#a78bfa','#34d399','#fbbf24','#f87171','#94a3b8'];return`<div class="stack">${items.map((x,i)=>`<i style="width:${x.v/t*100}%;background:${col[i%7]}"></i>`).join('')}</div><small>${items.map((x,i)=>`<span style="color:${col[i%7]}">■</span> ${x.n} ${f1(x.v)}`).join(' &nbsp; ')}</small>`}
+const ell=(cx,cy,rx,ry)=>`M${cx-rx} ${cy}a${rx} ${ry} 0 1 0 ${2*rx} 0a${rx} ${ry} 0 1 0 ${-2*rx} 0`;
+function orbSVG(o,tr,sim){const P={LEO:[150,100,52,44],SSO:[150,100,40,72],GEO:[150,100,100,84],LUNAR:[150,100,62,56],L1:[150,100,14,36]}[o],path=ell(...P),moon=o==='LUNAR',l1=o==='L1',bx=l1?50:150,br=l1?18:moon?22:30,top=P[1]-P[3];
+const tp=l1?(tr==='b'?'M50 100Q100 30 150 64':'M68 100L150 100'):(tr==='b'?`M150 ${100-br}Q${150+P[2]} ${top+10} 150 ${top}`:`M150 ${100-br}L150 ${top}`);
+const rt=S.mission?clamp(calc().dvA/calc().dvN,0,1):1;return`<div class='space'><i class='l1'></i><i class='l2'></i><i class='nb'></i><i class='hz'></i><svg viewBox='0 0 300 200' style='width:100%;max-height:300px'><text x="8" y="14" fill="var(--mu)" font-size="10">${ORB[o].n} · ${ORB[o].a}</text>
+${l1?'<circle cx="285" cy="100" r="14" fill="#fbbf24"/>':''}<circle cx="${bx}" cy="100" r="${br}" fill="${moon?'#8b94a8':'#1d6fd8'}" stroke="var(--cy)" stroke-width="1"/>
+<path d="${path}" fill="none" stroke="var(--cy)" stroke-width="1.2" opacity=".6"/><path d='${tp}' fill='none' stroke='#8A9BB5' stroke-dasharray='3 3' opacity='.5'/><path d='${tp}' pathLength='100' fill='none' stroke='${rt>=1?'#10B981':'#FF4D4D'}' stroke-width='1.6' stroke-dasharray='${rt*100} 100'/><circle cx='150' cy='${top}' r='3' fill='none' stroke='#FFB300'/><text x='156' y='${top-3}' fill='#FFB300' font-size='7' font-family='monospace'>AP</text><circle cx='150' cy='${100+P[3]}' r='3' fill='none' stroke='#FFB300'/><text x='156' y='${100+P[3]+10}' fill='#FFB300' font-size='7' font-family='monospace'>PE</text>
+${sim?`<g class="rk"><path d="M-3 0l3-11 3 11z" fill="#fff" transform="translate(${bx},${100-br})"/></g><path class="bm" d="M150 ${top} L25 182" stroke="var(--ok)" stroke-dasharray="4 4" fill="none"/><path d="M18 190l7-10 7 10z" fill="var(--ok)"/>`:''}
+<circle class="sat" r="4" fill="var(--cy)"><animateMotion dur="7s" repeatCount="indefinite" path="${path}"/></circle></svg></div>`}
+
+const V={};
+V.control=()=>{const m=S.mission;return`<h1>Mission Director</h1><p class="mu" style="max-width:680px">Design, manage and simulate a space mission. Every choice you make changes the physics of the final simulation.</p>
+<div class="g g3" style="margin:14px 0"><div class="card"><div class="pill">Pillar 1</div><h3>DESIGN</h3><small>Pick objectives, instruments, spacecraft systems, launcher and orbit.</small></div><div class="card"><div class="pill">Pillar 2</div><h3>MANAGE</h3><small>Balance mass, power, budget, storage and communication.</small></div><div class="card"><div class="pill">Pillar 3</div><h3>SIMULATE</h3><small>Fly the mission and see exactly why it succeeded or failed.</small></div></div>
+<div class="g g2"><div class="card"><h2>Start</h2><p class="mu">New here? NOVA will guide you through a short first mission.</p><button class="b" data-a="tstart">Begin MISSION ZERO tutorial</button> <button class="b alt" data-a="nav" data-v="briefing">Choose a mission</button></div>
+<div class="card"><h2>Status</h2>${m?`<p><b>${m.n}</b><br><span class="mu">${S.inst.length} instruments · budget $${m.b}M</span></p><button class="b alt" data-a="nav" data-v="designer">Continue design</button>`:'<p class="mu">No mission selected.</p>'}${S.last?`<p class="mu">Last result: ${S.last.n}, ${S.last.out}, score ${S.last.score}/100</p>`:''}</div></div>
+<div class="card" style="margin-top:12px"><h3>Game loop</h3><p class="mu">Select mission → Design spacecraft → Manage resources → Configure launch → Simulate → Review report</p><div>${NAV.slice(1).map(x=>`<button class="b alt" style="margin:3px" data-a="nav" data-v="${x[0]}">${x[1]}</button>`).join('')}</div></div>`};
+V.briefing=()=>{const m=S.mission,list=MIS.filter(x=>x.id!=='zero');return`<h2>Mission Briefing</h2><div class="g g2">${list.map(x=>`<div class="card btn ${m&&m.id===x.id?'sel':''}" data-a="pick" data-i="${x.id}"><div class="pill">${x.df}</div><h3>${x.n}</h3><small>${x.t} · Budget $${x.b}M</small></div>`).join('')}</div>
+${m?`<div class="card" style="margin-top:14px"><div class="pill">${m.df} difficulty</div><h1>${m.n}</h1><p>${m.x}</p><div class="g g3"><div><small>Target destination</small>${m.t}</div><div><small>Available budget</small>$${m.b}M</div><div><small>Mission duration</small>${m.d} days</div></div>
+<h3 style="margin-top:12px">Scientific goals</h3>${m.g.map(k=>`<span class="tag hit">${GOAL[k]}</span>`).join('')}
+<h3 style="margin-top:12px">Data source</h3>${DATASETS.map(d=>`<div class="warn wa"><b>${d.status==='sample'?'SAMPLE DATA':'NASA DATA'}</b> · ${d.source}<br>${d.use}${d.url?` <a href="${d.url}" style="color:var(--cy)">source</a>`:''}</div>`).join('')}<small>Real datasets can be browsed at data.nasa.gov/dataset and added to the DATASETS registry.</small>
+<p><button class="b" data-a="nav" data-v="designer">Design spacecraft →</button></p></div>`:'<p class="mu">Select a mission to see its briefing.</p>'}`};
+V.designer=()=>{const c=calc(),M=c.M;return`<div class="lay"><div><h2>Scientific Instruments</h2><div class="g g2">${INS.map(i=>{const on=S.inst.includes(i.id);return`<div class="card btn ${on?'sel':''}" data-a='inst' data-i='${i.id}' data-part='i:${i.id}'><div class='opt'><h3>${i.n}</h3><span class='sw ${on?'on':''}'><i></i></span></div><small>${i.m} kg · ${i.p} W · $${i.c}M · ${i.d} GB/day · science ${i.s}/10</small>${i.k.map(k=>`<span class="tag ${M.g.includes(k)?'hit':''}">${GOAL[k]}</span>`).join('')}</div>`}).join('')}</div>
+<h2 style="margin-top:18px">Spacecraft Components</h2>${Object.keys(CMP).map(k=>`<h3 style="margin-top:10px">${CMP[k].n}</h3><div class="g g3">${CMP[k].o.map(o=>`<div class="card btn ${S.comp[k]===o.id?'sel':''}" data-a='comp' data-k='${k}' data-i='${o.id}' data-part='${k}'><b>${o.n}</b><small>${o.m} kg · $${o.c}M${o.g?` · ${o.g} W`:''}${o.r?` · ${o.r} GB/day · ${o.p} W`:''}${o.v?` · ${o.v} m/s${o.p?` · ${o.p} W`:''}`:''}${o.l?` · rating ${o.l}/3${o.p?` · ${o.p} W`:''}`:''}${o.s&&!o.l?` · ${o.p} W`:''}</small></div>`).join('')}</div>`).join('')}</div>
+<div class='g'><div class='card'><h3>Blueprint: side elevation</h3><div class='space'><i class='l1'></i><i class='l2'></i><i class='nb'></i><div id='sch'>${schem()}</div></div></div><div class='card'><h3>Propulsion test</h3><label>Fuel load <b id='fuelv'>${S.fuel}%</b></label><input type='range' min='20' max='100' value='${S.fuel}' data-s='fuel'><label>Throttle <b id='thrv'>${S.thr}%</b></label><input type='range' min='5' max='100' value='${S.thr}' data-s='thr'><div id='tel'>${telem()}</div></div><div class='card'><h3>Staging sequence</h3><div id='seq'>${seqHTML()}</div></div><div class='card'><h3>3D view</h3><div id='v3' style='height:300px;touch-action:none'></div><small>Drag to rotate. The grid is the turntable plane; the plume follows throttle.</small></div><div class='card'><h3>Live resources</h3><div id='dsh'>${dash(c)}</div></div></div></div>`};
+V.resources=()=>{const c=calc(),CL=Object.entries(c.C);return`<h2>Resource Management</h2><div class="lay"><div class="card">${dash(c)}</div><div><div class="card"><h3>Mass breakdown (${f1(c.mass)} kg)</h3>${stackBar([{n:'Bus',v:120},{n:'Instruments',v:sum(c.I,'m')},...CL.map(([k,x])=>({n:CMP[k].n,v:x.m}))])}</div><div class="card" style="margin-top:12px"><h3>Cost breakdown ($${f1(c.cost)}M)</h3>${stackBar([{n:'Bus',v:20},{n:'Instruments',v:sum(c.I,'c')},{n:'Launch',v:c.lv.c},{n:'Systems',v:sum(CL.map(x=>x[1]),'c')}])}</div></div></div>`};
+V.launch=()=>{const c=calc(),opts=(arr,k,cur,f)=>arr.map(x=>`<div class="card btn ${cur===x.id?'sel':''}" data-a="${k}" data-i="${x.id}">${f(x)}</div>`).join('');
+return`<h2>Launch Configuration</h2><div class="lay"><div><h3>Launch vehicle</h3><div class="g g3">${opts(LV,'lv',S.lv,x=>`<b>${x.n}</b><small>${x.cap} kg to LEO · $${x.c}M · reliability ${Math.round(x.r*100)}%</small>`)}</div>
+<h3 style="margin-top:14px">Orbit</h3><div class="g g3">${Object.keys(ORB).map(k=>`<div class="card btn ${S.orb===k?'sel':''}" data-a="orb" data-i="${k}"><b>${ORB[k].n}</b><small>${ORB[k].a} · ${ORB[k].v} m/s · capacity ×${ORB[k].k}<br>${c.M.o.includes(k)?'<span class="ok">Fits mission target</span>':'<span class="er">Does not fit mission target</span>'}</small></div>`).join('')}</div>
+<h3 style="margin-top:14px">Trajectory</h3><div class="g g2">${Object.keys(TR).map(k=>`<div class="card btn ${S.traj===k?'sel':''}" data-a="traj" data-i="${k}"><b>${TR[k].n}</b><small>${TR[k].x}</small></div>`).join('')}</div>
+<div class="card" style="margin-top:14px"><h3>Effects of your choices</h3><small>Sunlight fraction ${orbPct(c.orb.s)} · ground contact ${orbPct(c.orb.c)} · thermal severity ${c.orb.t}/3 · transit ${c.tr.days} days · delta-v required ${f1(c.dvN)} m/s</small></div></div>
+<div class="sticky"><div class="card">${orbSVG(S.orb,S.traj)}</div><div class="card" style="margin-top:12px">${dash(c)}</div></div></div>`};
+const orbPct=x=>Math.round(x*100)+'%';
+V.sim=()=>{const c=calc(),w=warns(c),R=S.result,hard=w.filter(x=>x.l==='er'&&/Budget|No instr/.test(x.t));
+return`<h2>Mission Simulation</h2><div class="lay"><div><div class="card"><div id="sc" class="sc ${R?'g0 g1 g2 g3 g4 g5 g6':''}">${orbSVG(S.orb,S.traj,1)}</div></div><div style="margin-top:12px">${STG.map((n,i)=>{const s=R?R.st[i]:null;return`<div class="st ${s?s.l:''}" id="st${i}"><div class="dot"></div><div><b>${i+1}. ${n}</b><small id="stt${i}">${s?s.t:'Waiting'}</small></div></div>`}).join('')}</div></div>
+<div class="card sticky"><h3>Pre-flight check</h3>${w.length?w.map(x=>`<div class="warn ${x.l}">${x.t}</div>`).join(''):'<div class="warn ok">Go for launch.</div>'}<h3 style='margin-top:10px'>Playback speed</h3><div class='spd'>${[1,5,20].map(v=>`<button class='${S.spd===v?'on':''}' data-a='spd' data-v='${v}'>${v}x</button>`).join('')}</div><p></p><button class="b" id="runb" data-a="run" ${hard.length?'disabled':''}>${R?'Re-run simulation':'Start launch sequence'}</button>${hard.length?'<small>Fix budget or add an instrument to launch.</small>':''}<p id="rl">${R?`<button class="b alt" data-a="nav" data-v="report">View mission report →</button>`:''}</p></div></div>`};
+V.report=()=>{const R=S.result;if(!R)return`<h2>Mission Reports</h2><p class="mu">Run a simulation to generate a report.</p><button class="b" data-a="nav" data-v="sim">Go to simulation</button>`;const {c}=R,M=c.M,oc={success:'ok',partial:'wa',fail:'er'}[R.out],rec=[];
+if(R.margin<0)rec.push('Reduce spacecraft mass or choose a larger launch vehicle.');if(R.ratio<1)rec.push('Add propulsion capability, cut mass, or use the low-energy transfer.');if(!R.fit)rec.push('Choose an orbit that matches the mission target.');
+if(R.ins.some(x=>!x.on))rec.push('Increase power generation or drop a power-hungry instrument.');if(R.tf<1)rec.push('Upgrade thermal control for this orbit.');if(R.sEff<1)rec.push('Add data storage to buffer between ground contacts.');if(R.frac<.7&&R.prod)rec.push('Upgrade the communication system or pick an orbit with more ground contact.');
+R.goals.filter(g=>g.v<1).forEach(g=>rec.push('Improve coverage for goal: '+GOAL[g.k]+'.'));if(c.cost>M.b)rec.push('Reduce cost to stay inside budget.');if(!rec.length)rec.push('Strong design. Try a harder mission or trim cost for a higher efficiency score.');
+const fl=R.st.filter(x=>x.l==='fail'||x.l==='warn').map(x=>x.t);
+return`<h2>Mission Report</h2><div class="g g2"><div class="card"><div class="pill">${M.n}</div><div class="score">${R.score}<small style="display:inline;font-size:18px">/100</small></div><h3 class="${oc}" style="margin-top:8px">${R.out==='success'?'Successful mission':R.out==='partial'?'Partially successful mission':'Mission failure'}</h3><small>Rank: ${R.score>=85?'Flight Director':R.score>=65?'Mission Specialist':R.score>=40?'Flight Engineer':'Cadet'}</small></div>
+<div class="card"><table><tr><td>Mission success rate</td><td><b>${R.sr}%</b></td></tr><tr><td>Total mission cost</td><td><b>$${f1(c.cost)}M</b> of $${M.b}M</td></tr><tr><td>Resource efficiency</td><td>power ${Math.round((c.bus+c.il)/c.gen*100)}% · launch ${Math.round(c.mass/c.cap*100)}% · data returned ${Math.round(R.frac*100)}%</td></tr><tr><td>Science per $M</td><td>${f1(R.sr/c.cost)} pts</td></tr></table></div></div>
+<div class="card" style="margin-top:12px"><h3>Why it ${R.out==='success'?'succeeded':R.out==='partial'?'was only partly successful':'failed'}</h3>${fl.length?fl.map(t=>`<div class="warn wa">${t}</div>`).join(''):'<div class="warn ok">Every stage ran within its limits.</div>'}</div>
+<div class="g g2" style="margin-top:12px"><div class="card"><h3>Scientific objectives</h3>${R.goals.map(g=>`<div class="warn ${g.v===1?'ok':g.v?'wa':'er'}">${GOAL[g.k]}: ${g.v===1?'achieved':g.v?'partly achieved':'not achieved'}</div>`).join('')}</div>
+<div class="card"><h3>Instrument performance</h3>${R.ins.length?`<table><tr><th>Instrument</th><th>Status</th><th>Science</th></tr>${R.ins.map(x=>{const q=x.on?clamp(R.frac,0,1)*x.tf*(R.fit?1:.15):0;return`<tr><td>${x.i.n}</td><td class="${x.on?x.tf<1?'wa':'ok':'er'}">${x.on?x.tf<1?'degraded':'active':'no power'}</td><td>${f1(x.i.s*q)}/${x.i.s}</td></tr>`}).join('')}</table>`:'<small>None selected.</small>'}</div></div>
+<div class="card" style="margin-top:12px"><h3>Recommendations</h3>${rec.map(t=>`<div class="warn ok">${t}</div>`).join('')}<button class="b" data-a="nav" data-v="designer">Redesign</button> <button class="b alt" data-a="nav" data-v="briefing">New mission</button></div>`};
+
+function render(){$('#nav').innerHTML='<b>MISSION DIRECTOR</b>'+NAV.map(n=>`<button class="${S.view===n[0]?'on':''}" data-a="nav" data-v="${n[0]}">${n[1]}</button>`).join('')+`<button class='b alt' style='margin-left:auto;padding:5px 10px' data-a='vid'>VIDEO</button><button class='b alt' style='padding:5px 10px' data-a='voice'>VOICE ${S.voice?'ON':'OFF'}</button><button class='b alt' style='padding:5px 10px' data-a='mute'>SND ${S.snd?'ON':'OFF'}</button>`;
+const need=!S.mission&&!['control','briefing'].includes(S.view);$('#app').innerHTML=need?'<h2>No mission selected</h2><p class="mu">Choose a mission first.</p><button class="b" data-a="nav" data-v="briefing">Open Mission Briefing</button>':V[S.view]();
+const t=S.tut,n=$('#nova');n.style.display=t===null?'none':'block';if(t!==null){$('#nt').innerHTML='<b style="color:var(--cy)">NOVA:</b> '+TUT[t][1];$('#ns').textContent=`Step ${t+1}/${TUT.length}`;$('#nn').disabled=!TUT[t][2]();$('#nn').textContent=t===TUT.length-1?'Finish':'Continue'}HK=null;mount3d()}
+function reset(m){S.mission=m;S.inst=[];S.comp=defComp();S.orb=m.o[0];S.lv='b';S.traj='a';S.result=null;S.tc={};S.fails=0}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function run(){if(S.busy)return;S.busy=true;const R=evaluate(),sc=$('#sc');S.result=null;$('#runb').disabled=true;$('#rl').innerHTML='';sc.className='sc';
+STG.forEach((_,i)=>{$('#st'+i).className='st';$('#stt'+i).textContent='Waiting'});
+for(let i=0;i<7;i++){const el=$('#st'+i);if(!el)break;el.className='st run';$('#stt'+i).textContent='In progress…';sc.className='sc '+[...Array(i+1)].map((_,j)=>'g'+j).join(' ');await sleep((S.tut!==null?800:1300)/S.spd);if(!$('#st'+i))break;el.className='st '+R.st[i].l;$('#stt'+i).textContent=R.st[i].t}
+S.busy=false;S.result=R;S.last={n:R.c.M.n,out:R.out,score:R.score};if(S.view==='sim')render();setTimeout(()=>judge(R),900)}
+const G3={rot:{y:.7,x:.2},drag:0,run:0,hm:[],hl:null};
+const tex=(w,h)=>{const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');x.fillStyle='#16367a';x.fillRect(0,0,64,64);x.strokeStyle='#5d8fd6';x.lineWidth=3;x.strokeRect(0,0,64,64);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(w,h);return t};
+const M3=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,metalness:.5,roughness:.45},o||{}));
+function build3Old(){const root=new THREE.Group(),P={},C=S.comp,B=THREE.BoxGeometry,Cy=THREE.CylinderGeometry;
+const part=k=>{const g=new THREE.Group();P[k]=g;root.add(g);return g};
+const put=(g,geo,mt,x,y,z,rx,rz)=>{const m=new THREE.Mesh(geo,mt);m.position.set(x,y,z);if(rx)m.rotation.x=rx;if(rz)m.rotation.z=rz;g.add(m);return m};
+const gold=M3(0xc9a24a,{metalness:.8,roughness:.35}),gr=M3(0xaab4c4),dk=M3(0x1a2236,{metalness:.3}),wh=M3(0xe6ebf2,{metalness:.1,roughness:.6});
+put(part('bus'),new B(1.4,1.4,1.8),gold,0,0,0);
+const pw=part('power'),w={a:1.3,b:2.3,c:3.5}[C.power];
+[-1,1].forEach(s=>{put(pw,new Cy(.04,.04,.4),gr,s*.9,0,0,0,Math.PI/2);put(pw,new B(w,.05,1.5),M3(0xffffff,{map:tex(w*2,3),metalness:.3,roughness:.35}),s*(1.1+w/2),0,0)});
+const cm=part('comms');
+if(C.comms==='a')put(cm,new Cy(.02,.02,1),gr,.4,1.2,-.3);
+else if(C.comms==='b')put(cm,new B(.5,.06,.5),wh,0,.73,-.3);
+else{const r=C.comms==='c'?.55:.9;put(cm,new Cy(.03,.03,.5),gr,0,.95,-.3);put(cm,new THREE.SphereGeometry(r,20,8,0,6.283,Math.PI-1.2,1.2),M3(0xf2f4f8,{side:THREE.DoubleSide}),0,1.2+r,-.3,-.5)}
+const pr=part('prop'),o=C.prop;
+if(o==='a')[[.5,.5],[-.5,.5],[.5,-.5],[-.5,-.5]].forEach(p=>put(pr,new Cy(.03,.08,.16),dk,p[0],p[1],-.95,Math.PI/2));
+else if(o==='b')put(pr,new Cy(.1,.28,.5),dk,0,0,-1.15,Math.PI/2);
+else if(o==='c')put(pr,new Cy(.15,.55,.9),M3(0x6b7385,{metalness:.8}),0,0,-1.35,Math.PI/2);
+else{put(pr,new Cy(.42,.42,.12),dk,0,0,-.96,Math.PI/2);put(pr,new THREE.SphereGeometry(.2,12,8),new THREE.MeshBasicMaterial({color:0x66ccff}),0,0,-1.1)}
+const th=part('therm'),l=C.therm==='a'?0:C.therm==='b'?1:2;
+if(!l)put(th,new B(1.46,1.46,1.86),M3(0xe0b84a,{transparent:true,opacity:.35}),0,0,0);
+if(l)put(th,new B(1.3,.05,1.5),wh,0,-.75,0);if(l>1)[-.4,0,.4].forEach(x=>put(th,new Cy(.02,.02,1.4),M3(0xd06030),x,-.8,0,Math.PI/2));
+put(part('store'),new B(.1,{a:.3,b:.5,c:.8}[C.store],.6),dk,-.74,0,-.3);
+S.inst.forEach((id,n)=>{const g=part('i:'+id),x=((n%3)-1)*.45,y=(1-Math.floor(n/3))*.4,z=.9;
+if(id==='img'){put(g,new Cy(.17,.17,.45),dk,x,y,z+.22,Math.PI/2);put(g,new THREE.CircleGeometry(.12,16),new THREE.MeshBasicMaterial({color:0x66e0ff}),x,y,z+.46)}
+else if(id==='snd')put(g,new B(.35,.3,.4),gr,x,y,z+.2);
+else if(id==='lid'){put(g,new Cy(.12,.12,.7),wh,x,y,z+.35,Math.PI/2);put(g,new THREE.TorusGeometry(.14,.02,6,16),gr,x,y,z+.7)}
+else if(id==='rad')put(g,new Cy(.16,.05,.4),gr,x,y,z+.2,Math.PI/2);
+else if(id==='cor'){put(g,new Cy(.12,.12,.8),dk,x,y,z+.4,Math.PI/2);put(g,new Cy(.22,.22,.03),wh,x,y,z+.85,Math.PI/2)}
+else if(id==='par')put(g,new B(.22,.22,.22),M3(0xd98b3a),x,y,z+.11);
+else if(id==='mag'){put(g,new Cy(.015,.015,1.5),gr,.55,1.45,-.5);put(g,new THREE.SphereGeometry(.07,8,6),M3(0xd98b3a),.55,2.2,-.5)}
+else put(g,new B(.3,.3,.3),M3(0x4fb3a5),x,y,z+.15)});
+return{root,P}}
+function build3(){const U=THREE,PI=Math.PI,H=PI/2,root=new U.Group(),P={},C=S.comp,Bx=(x,y,z)=>new U.BoxGeometry(x,y,z),Cy=(a,b,h,s)=>new U.CylinderGeometry(a,b,h,s||20),Sp=(r,s)=>new U.SphereGeometry(r,s||20,12),To=(r,t)=>new U.TorusGeometry(r,t,8,24);
+const part=k=>{const g=new U.Group();P[k]=g;root.add(g);return g};
+const put=(g,geo,mt,x,y,z,rx,ry,rz)=>{const m=new U.Mesh(geo,mt);m.position.set(x||0,y||0,z||0);m.rotation.set(rx||0,ry||0,rz||0);g.add(m);return m};
+const edge=(g,geo,x,y,z,c)=>{const l=new U.LineSegments(new U.EdgesGeometry(geo),new U.LineBasicMaterial({color:c||0x0b0f17}));l.position.set(x||0,y||0,z||0);g.add(l)};
+const gold=M3(0xc9a24a,{metalness:.85,roughness:.3}),gr=M3(0xaab4c4),dk=M3(0x1a2236,{metalness:.3}),wh=M3(0xe6ebf2,{metalness:.1,roughness:.6}),cu=M3(0x9a6a46,{metalness:.8,roughness:.35}),gl=M3(0x0a2a38,{emissive:0x0a5566,metalness:1,roughness:.1}),lens=new U.MeshBasicMaterial({color:0x66e0ff}),tank=M3(0xdadfe8,{metalness:.6});
+const bus=part('bus');put(bus,Bx(1.4,1.4,1.8),gold,0,0,0);edge(bus,Bx(1.4,1.4,1.8),0,0,0,0x3a2f12);
+[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(a=>put(bus,Cy(.05,.05,1.86,8),gr,a[0]*.7,a[1]*.7,0,H));
+[-.45,.45].forEach(z=>put(bus,Bx(1.43,1.43,.03),dk,0,0,z));
+[-.45,.45].forEach(x=>{put(bus,Cy(.08,.08,.2,12),dk,x,.8,.6);put(bus,Cy(.15,.08,.12,12),dk,x,.95,.6)});
+put(bus,Cy(.55,.6,.12,24),gr,0,0,-.96,H);put(bus,To(.58,.02),dk,0,0,-1.02);
+const pw=part('power'),n={a:1,b:2,c:3}[C.power],pd={a:1.2,b:1.05,c:1.05}[C.power],pt=M3(0xffffff,{map:tex(pd*2,3),metalness:.3,roughness:.35});
+[-1,1].forEach(s=>{put(pw,Cy(.1,.1,.3),dk,s*.82,0,0,0,0,H);put(pw,Cy(.03,.03,.5),gr,s*1.05,0,0,0,0,H);for(let i=0;i<n;i++){const x=s*(1.3+i*(pd+.08)+pd/2);put(pw,Bx(pd,.04,1.5),pt,x,0,0);put(pw,Bx(pd,.02,1.5),wh,x,-.03,0);edge(pw,Bx(pd,.05,1.5),x,0,0,0x6f8fc8);if(i)put(pw,Cy(.03,.03,1.4),gr,s*(1.3+i*(pd+.08)-.04),0,0,H)}});
+const cm=part('comms');
+if(C.comms==='a'){put(cm,Cy(.07,.07,.1),dk,.4,.75,-.3);put(cm,Cy(.012,.012,1.1),gr,.4,1.3,-.3);put(cm,Sp(.035,8),gr,.4,1.85,-.3)}
+else if(C.comms==='b'){put(cm,Cy(.05,.05,.1),dk,0,.75,-.3);put(cm,Bx(.55,.05,.55),wh,0,.83,-.3);put(cm,Bx(.4,.055,.4),dk,0,.83,-.3)}
+else{const r=C.comms==='c'?.55:.9,dg=new U.Group();dg.position.set(0,.95,-.3);dg.rotation.x=-.5;cm.add(dg);put(cm,Cy(.04,.04,.4),gr,0,.8,-.3);put(cm,Sp(.09,10),dk,0,.95,-.3);
+put(dg,new U.SphereGeometry(r,24,8,0,6.283,PI-1.2,1.2),M3(0xf2f4f8,{side:U.DoubleSide}),0,r,0);put(dg,To(r*.93,.015),gr,0,r*.64,0,H);put(dg,Cy(.012,.012,r*.8),gr,0,r*.4,0);put(dg,Cy(.09,.03,.2),dk,0,r*.85,0)}
+const th=part('therm');
+if(C.therm==='a'){put(th,Bx(1.46,1.46,1.86),M3(0xe0b84a,{transparent:true,opacity:.3,metalness:.9}),0,0,0);[-.6,-.2,.2,.6].forEach(z=>put(th,Bx(1.48,.02,.04),gr,0,.73,z))}
+else{put(th,Bx(1.3,.04,1.5),wh,0,-.75,0);for(let i=-3;i<=3;i++)put(th,Bx(.03,.03,1.5),gr,i*.2,-.78,0);put(th,Bx(.04,.55,.9),wh,-.74,-.45,0);put(th,Bx(.04,.55,.9),wh,.74,-.45,0);
+if(C.therm==='c'){const pm=M3(0xd06030);for(let i=-2;i<=2;i++)put(th,Cy(.015,.015,1.4),pm,i*.25,-.8,0,H);put(th,Cy(.015,.015,1.0),pm,0,-.8,.7,0,0,H);put(th,Bx(.22,.14,.22),dk,.5,-.8,.75)}}
+const st=part('store'),sh={a:.3,b:.5,c:.8}[C.store];put(st,Bx(.1,sh,.6),dk,-.76,0,-.3);for(let i=0;i<3;i++)put(st,Sp(.015,6),new U.MeshBasicMaterial({color:i?0x10b981:0xffb300}),-.82,sh/2-.08-i*.08,-.3);
+const pr=part('prop'),o=C.prop;let E,rr;
+if(o==='a'){[[.5,.5],[-.5,.5],[.5,-.5],[-.5,-.5]].forEach(p=>{put(pr,Bx(.14,.14,.12),dk,p[0],p[1],-.98);put(pr,Cy(.02,.06,.14),dk,p[0],p[1],-1.1,H)});put(pr,Sp(.28),M3(0x9aa7b8,{metalness:.7}),0,0,-1.22);put(pr,Cy(.04,.1,.12),dk,0,0,-1.55,H);E=[0,0,-1.61];rr=.1}
+else if(o==='b'){[-1,1].forEach(s=>put(pr,Sp(.3),M3(0x9aa7b8,{metalness:.7}),s*.5,0,-1.25));put(pr,Cy(.1,.28,.5),dk,0,0,-1.15,H);put(pr,To(.2,.015),gr,0,0,-1.3);E=[0,0,-1.4];rr=.26}
+else if(o==='c'){[[-.6,0x3b82f6],[.6,0xffb300]].forEach(a=>{put(pr,Cy(.22,.22,.7),tank,a[0],0,-1.3,H);[-.35,.35].forEach(d=>put(pr,Sp(.22),tank,a[0],0,-1.3+d));put(pr,To(.225,.02),M3(a[1]),a[0],0,-1.3)});put(pr,Cy(.15,.55,.9),cu,0,0,-1.35,H);[-1.5,-1.7].forEach(z=>put(pr,To(.4+(-z-1.5)*.5,.015),gr,0,0,z));E=[0,0,-1.8];rr=.5}
+else{put(pr,Sp(.32),M3(0xdde3ea,{metalness:.8}),0,.1,-1.3);put(pr,Bx(.3,.3,.2),dk,0,-.35,-1.1);put(pr,Cy(.25,.25,.06),M3(0x44505f,{metalness:.9}),0,-.35,-1.24,H);[.08,.15,.21].forEach(r=>put(pr,To(r,.006),lens,0,-.35,-1.275));E=[0,-.35,-1.28];rr=.22}
+const pg=new U.Group(),pc=o==='d'?0x66ccff:0xffb347;pg.position.set(E[0],E[1],E[2]);root.add(pg);
+[[rr,.45],[rr*.5,.9]].forEach(a=>{const g=new U.ConeGeometry(a[0],1,16,1,true);g.rotateX(-H);g.translate(0,0,-.5);pg.add(new U.Mesh(g,new U.MeshBasicMaterial({color:a[1]>.5?0xffffff:pc,transparent:true,opacity:a[1]*.5,blending:U.AdditiveBlending,depthWrite:false})))});
+pg.userData.b={a:.5,b:1.1,c:1.8,d:1.6}[o];root.userData.pl=pg;
+S.inst.forEach((id,n)=>{const g=part('i:'+id),x=((n%3)-1)*.45,y=(1-Math.floor(n/3))*.4,z=.9,mk=(geo,mt,dx,dy,dz,rx,ry,rz)=>put(g,geo,mt,x+(dx||0),y+(dy||0),z+(dz||0),rx,ry,rz);
+if(id!=='mag')mk(Bx(.32,.32,.04),dk,0,0,.02);
+if(id==='img'){mk(Cy(.17,.17,.4),dk,0,0,.22,H);mk(Cy(.22,.17,.16),gr,0,0,.5,H);mk(new U.CircleGeometry(.12,16),lens,0,0,.58);mk(To(.19,.02),gr,0,0,.3)}
+else if(id==='snd'){mk(Bx(.38,.3,.36),gr,0,0,.2);mk(Cy(.09,.09,.3),dk,0,0,.42,0,0,H);mk(Bx(.2,.02,.2),gl,0,.16,.2)}
+else if(id==='lid'){mk(Bx(.34,.2,.3),wh,0,0,.17);[-.1,.1].forEach(d=>{mk(Cy(.09,.09,.55),wh,d,0,.55,H);mk(new U.CircleGeometry(.07,12),lens,d,0,.83)})}
+else if(id==='rad'){mk(Cy(.2,.05,.4),gr,0,0,.22,H);mk(Cy(.04,.04,.1),dk,0,0,.05,H)}
+else if(id==='cor'){mk(Cy(.12,.12,.9),dk,0,0,.5,H);mk(Cy(.22,.22,.03),wh,0,0,1.0,H);mk(Cy(.01,.01,.3),gr,0,0,.9,H);mk(To(.12,.015),gr,0,0,.95)}
+else if(id==='par'){mk(Bx(.24,.24,.12),dk,0,0,.08);mk(new U.SphereGeometry(.13,12,8,0,6.283,0,H),lens,0,0,.14,H)}
+else if(id==='mag'){[0,1,2].forEach(i=>{put(g,Cy(.015,.015,.5,6),gr,.55,.95+i*.52,-.5);put(g,Sp(.03,6),dk,.55,1.22+i*.52,-.5)});put(g,Bx(.08,.08,.08),M3(0xd98b3a),.55,2.4,-.5)}
+else{[0,1,2,3].forEach(i=>mk(Bx(.3,.05,.3),M3(0x4fb3a5),0,-.1+i*.07,.17));mk(Bx(.06,.28,.06),dk,.14,0,.17)}});
+const gd=new U.GridHelper(10,20,0x00e5ff,0x273752);gd.position.y=-1.9;gd.material.transparent=true;gd.material.opacity=.3;root.add(gd);
+return{root,P}}
+function mount3d(){const h=$('#v3');if(!h)return;
+if(!window.THREE){h.innerHTML='<small>3D view unavailable (script blocked).</small>';return}
+if(!G3.r){const r=G3.r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(Math.min(devicePixelRatio,2));G3.s=new THREE.Scene();G3.c=new THREE.PerspectiveCamera(38,1,.1,100);G3.c.position.set(0,1.2,11.5);G3.c.lookAt(0,0,0);
+G3.s.add(new THREE.AmbientLight(0xffffff,.55));const d=new THREE.DirectionalLight(0xffffff,1.1);d.position.set(4,5,6);G3.s.add(d);const f=new THREE.DirectionalLight(0x6fa8ff,.4);f.position.set(-5,-2,-4);G3.s.add(f);
+const el=r.domElement;let lx,ly;el.addEventListener('pointerdown',e=>{G3.drag=1;lx=e.clientX;ly=e.clientY;el.setPointerCapture(e.pointerId)});
+el.addEventListener('pointermove',e=>{if(!G3.drag)return;G3.rot.y+=(e.clientX-lx)*.01;G3.rot.x=clamp(G3.rot.x+(e.clientY-ly)*.01,-1.2,1.2);lx=e.clientX;ly=e.clientY});el.addEventListener('pointerup',()=>G3.drag=0)}
+const w=h.clientWidth||300,hh=h.clientHeight||250;G3.r.setSize(w,hh);G3.c.aspect=w/hh;G3.c.updateProjectionMatrix();h.appendChild(G3.r.domElement);
+if(G3.m)G3.s.remove(G3.m);const b=build3();G3.m=b.root;G3.s.add(b.root);G3.hm=[];
+if(G3.hl&&b.P[G3.hl]){b.P[G3.hl].traverse(m=>{if(m.material&&m.material.emissive){m.material=m.material.clone();G3.hm.push(m.material)}});G3.bt=performance.now()}
+if(!G3.run){G3.run=1;loop()}}
+function loop(){if(!G3.r.domElement.isConnected){G3.run=0;return}
+if(!G3.drag)G3.rot.y+=.004;G3.m.rotation.set(G3.rot.x,G3.rot.y,0);
+const e=performance.now()-G3.bt;G3.hm.forEach(m=>{m.emissive.setHex(e<2000?0x1a8fb0:0);m.emissiveIntensity=.6+.4*Math.sin(e/120)});
+const pl=G3.m.userData.pl;if(pl){const t=performance.now();pl.scale.z=pl.userData.b*(.2+.8*S.thr/100)*(S.fire==='burn'?1.4:1)*(.9+.12*Math.sin(t/45)+.05*Math.sin(t/17));pl.scale.x=pl.scale.y=.9+.1*Math.sin(t/33)}
+G3.r.render(G3.s,G3.c);requestAnimationFrame(loop)}
+addEventListener('resize',mount3d);
+Object.assign(S,{fuel:100,thr:70,spd:1,snd:1,fire:null,seq:['fair','arr','ant','burn','ops']});
+const SQN={fair:'Fairing sep',arr:'Array deploy',ant:'Antenna deploy',burn:'Orbit burn',ops:'Cover off'},PXT={a:{i:60,t:20},b:{i:220,t:400},c:{i:310,t:4000},d:{i:3000,t:.1}},SL=[[168,128],[232,128],[168,150],[232,150],[184,128],[216,128],[184,150],[216,150]],COL={ok:'#10B981',wa:'#FFB300',er:'#FF4D4D'};
+let AC,HK=null;
+function sfx(k){if(!S.snd||!k)return;try{AC=AC||new AudioContext();const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain(),p={t:['square',1800,.015,.03],s:['square',420,.05,.05],i:['sawtooth',70,.9,.12]}[k];o.connect(g);g.connect(AC.destination);o.type=p[0];o.frequency.setValueAtTime(p[1],t);if(k==='i')o.frequency.exponentialRampToValueAtTime(260,t+p[2]);if(k==='s')o.frequency.setValueAtTime(840,t+.03);g.gain.setValueAtTime(p[3],t);g.gain.exponentialRampToValueAtTime(.0001,t+p[2]+.05);o.start(t);o.stop(t+p[2]+.06)}catch(e){}}
+function specOf(k,opt){const c=calc();let n,m,p=0,cs,x='';if(k==='bus'){n='Spacecraft bus';m=120;p=40;cs=20}else if(k.startsWith('i:')){const i=INS.find(q=>q.id===k.slice(2));n=i.n;m=i.m;p=i.p;cs=i.c;x=`<br>DATA ${i.d} GB/d`}else{const o=opt?CMP[k].o.find(q=>q.id===opt):c.C[k];n=CMP[k].n+': '+o.n;m=o.m;p=o.p||0;cs=o.c;if(k==='prop'){const q=PXT[o.id];x=`<br>ISP ${q.i} s / THRUST ${q.t} N`}if(k==='power')x=`<br>GEN ${o.g} W`}
+return `<b style='color:#00E5FF'>${n}</b><br>DRY ${f1(m)} kg / WET ${f1(k==='prop'?m*(1+.6*S.fuel/100):m)} kg<br>PWR ${p} W / COST $${cs}M${x}`}
+function comPos(c){const P=[[120,200,150],[c.C.power.m,200,150],[c.C.comms.m,200,72],[c.C.prop.m*(1+.6*S.fuel/100),200,228],[c.C.therm.m,200,150],[c.C.store.m,164,186]];S.inst.forEach((id,n)=>P.push([INS.find(x=>x.id===id).m,SL[n][0],SL[n][1]]));const t=P.reduce((s,p)=>s+p[0],0);return{x:P.reduce((s,p)=>s+p[0]*p[1],0)/t,y:P.reduce((s,p)=>s+p[0]*p[2],0)/t}}
+function schem(){const c=calc(),C=S.comp,cm=comPos(c),th=S.thr/100,off=Math.abs(cm.x-200),oc=COL[off<2?'ok':off<5?'wa':'er'],wA={a:60,b:100,c:130}[C.power],pl={a:16,b:46,c:70,d:30}[C.prop]*(.2+.8*th)*(S.fire==='burn'?1.4:1),col=C.prop==='d'?'#66ccff':'#ffb347',bw={a:10,b:30,c:46,d:44}[C.prop],bh={a:8,b:22,c:40,d:6}[C.prop],yb=210+bh,tr=C.prop==='d'?bw/2:bw*.22;
+const P=(k,b)=>`<g class='part' data-part='${k}'>${b}</g>`,nd=(x,y)=>`<circle class='node' cx='${x}' cy='${y}' r='3.5'/>`,tk=(x,w,f)=>`<rect x='${x}' y='176' width='${w}' height='30' fill='none' stroke='#8A9BB5' stroke-dasharray='3 2'/><rect x='${x}' y='${206-.3*S.fuel}' width='${w}' height='${.3*S.fuel}' fill='${f}' opacity='.5'/>`;
+let s=`<svg viewBox='0 0 400 340' class='${S.fire?'fire-'+S.fire:''}'><defs><linearGradient id='noz' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#6b7790'/><stop offset='.7' stop-color='#7a5a48'/><stop offset='1' stop-color='rgb(255,${Math.round(170-80*th)},60)' stop-opacity='${.35+.65*th}'/></linearGradient><linearGradient id='plm' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#fff'/><stop offset='.3' stop-color='${col}'/><stop offset='1' stop-color='${col}' stop-opacity='0'/></linearGradient><pattern id='cel' width='10' height='10' patternUnits='userSpaceOnUse'><rect width='10' height='10' fill='#10265a'/><path d='M0 0H10V10' fill='none' stroke='#4a7bd0' stroke-width='.6'/></pattern><pattern id='til' width='8' height='8' patternUnits='userSpaceOnUse'><path d='M0 0H8V8' fill='none' stroke='${C.therm==='a'?'#c9a24a':'#7a8aa8'}' stroke-width='.6'/></pattern></defs>`;
+s+=P('power',[-1,1].map(d=>{const x=d<0?130-wA:270;return `<g class='${d<0?'arrL':'arrR'}'><rect x='${x}' y='118' width='${wA}' height='64' fill='url(#cel)' stroke='#6f8fc8'/></g><line class='con' x1='${d<0?150:250}' y1='150' x2='${d<0?130:270}' y2='150'/>`}).join('')+nd(150,150)+nd(250,150)+`<text class='lb' x='${130-wA}' y='112'>SOLAR ARRAY</text>`);
+s+=P('comms',`<line class='con' x1='200' y1='90' x2='200' y2='62'/>`+(C.comms==='a'?`<line x1='200' y1='90' x2='214' y2='40' stroke='#aab4c4'/>`:C.comms==='b'?`<rect x='180' y='62' width='40' height='6' fill='#e6ebf2'/>`:(r=>`<path d='M${200-r} 62Q200 ${62+r*1.1} ${200+r} 62' fill='#1B263B' stroke='#E2E8F0' stroke-width='1.5'/><line x1='200' y1='${62+r*.5}' x2='200' y2='48' stroke='#8A9BB5'/>`)(C.comms==='c'?24:40))+nd(200,90)+`<text class='lb' x='246' y='56'>COMMS</text>`);
+s+=P('bus',`<rect x='150' y='90' width='100' height='120' fill='#131B29' stroke='#8A9BB5'/><rect x='150' y='90' width='100' height='120' fill='url(#til)' opacity='.5'/><path d='M150 112H250M150 172H250M200 90V112M200 172V210' stroke='#3b4d6b'/><rect x='154' y='94' width='92' height='112' fill='none' stroke='#8fa0bd' stroke-width='2.5' stroke-dasharray='0 7' stroke-linecap='round'/><path d='M154 116L246 168M246 116L154 168' stroke='#2b3b57' stroke-dasharray='2 3'/><text class='lb' x='156' y='104'>BUS</text>`);
+s+=P('therm',C.therm==='a'?`<rect x='148' y='88' width='104' height='124' fill='none' stroke='#c9a24a' stroke-dasharray='6 2'/>`:`<rect x='138' y='176' width='12' height='30' fill='#e6ebf2' opacity='.85'/><rect x='250' y='176' width='12' height='30' fill='#e6ebf2' opacity='.85'/>`+(C.therm==='c'?`<path d='M144 180V202M256 180V202' stroke='#ff7a2a'/>`:'')+nd(150,190)+nd(250,190));
+s+=P('store',`<rect x='156' y='178' width='14' height='${{a:12,b:20,c:28}[C.store]}' fill='#1B263B' stroke='#8A9BB5'/>`);
+s+=P('prop',(C.prop==='c'?tk(176,22,'#ffb300')+tk(202,22,'#10b981'):tk(176,48,C.prop==='d'?'#66ccff':'#ffb300'))+`<line class='con' x1='200' y1='206' x2='200' y2='212'/><path d='M${200-tr} 210L${200+tr} 210L${200+bw/2} ${yb}L${200-bw/2} ${yb}Z' fill='url(#noz)' stroke='#8A9BB5'/><path d='M200 210V${yb}' stroke='#ff7a2a' stroke-dasharray='2 2'/><path class='plume' d='M${200-bw/2+2} ${yb}L200 ${yb+pl}L${200+bw/2-2} ${yb}Z' fill='url(#plm)'/>`+nd(200,210)+`<text class='lb' x='${214+bw/2}' y='${yb+4}'>ENGINE</text>`);
+S.inst.forEach((id,n)=>{const[x,y]=SL[n];s+=P('i:'+id,`<line class='con' x1='${x}' y1='${y}' x2='200' y2='${y<140?112:172}'/><rect x='${x-7}' y='${y-8}' width='14' height='16' fill='#1B263B' stroke='#00E5FF' stroke-width='.8'/><circle cx='${x}' cy='${y}' r='3' fill='none' stroke='#00E5FF' stroke-width='.6'/>`+nd(x,y+8))});
+if(off>.2)s+=`<line x1='${cm.x}' y1='${cm.y}' x2='200' y2='${cm.y}' stroke='${oc}' stroke-dasharray='2 2'/>`;
+return s+`<g transform='translate(${cm.x},${cm.y})'><path d='M-12 0H12M0 -12V12' stroke='#FFB300' stroke-width='.8'/><circle r='6' fill='#0B0F17' stroke='#FFB300'/><path d='M0 0H-6A6 6 0 0 1 0 -6ZM0 0H6A6 6 0 0 1 0 6Z' fill='#FFB300'/></g><text class='lb' x='${cm.x+10}' y='${cm.y-8}' style='fill:#FFB300'>CoM</text><path d='M200 ${yb+14}V${yb-10}' stroke='#00E5FF'/><path d='M195 ${yb-6}L200 ${yb-14}L205 ${yb-6}Z' fill='#00E5FF'/><text class='lb' x='168' y='${yb+6}' style='fill:#00E5FF'>CoT</text></svg>`}
+function telem(){const c=calc(),px=PXT[S.comp.prop],T=px.t*S.thr/100,tw=T/(c.mass*9.81),off=Math.abs(comPos(c).x-200)*10,mg=c.dvA/c.dvN,k=mg>=1.15?'ok':mg>=1?'wa':'er',cl=(l,v,q)=>`<div><small>${l}</small><b class='${q||''}'>${v}</b></div>`;return `<div class='tg'>${cl('Mass',f1(c.mass)+' kg')}${cl('Thrust',(T<1?T.toFixed(2):f1(T))+' N')}${cl('Isp',px.i+' s')}${cl('TWR',tw<.01?tw.toExponential(1):tw.toFixed(2),tw>=.05?'ok':tw>=1e-5?'wa':'er')}${cl('dV avail',Math.round(c.dvA)+' m/s',k)}${cl('dV margin',Math.round((mg-1)*100)+'%',k)}${cl('CoM-CoT',f1(off)+' mm',off<20?'ok':off<50?'wa':'er')}</div>`}
+function seqHTML(){const q=S.seq,ix=k=>q.indexOf(k),bad=[];if(ix('fair')>ix('arr')||ix('fair')>ix('ant'))bad.push('Arrays and antenna cannot deploy inside the fairing.');if(ix('arr')>ix('burn'))bad.push('Deploy arrays before the orbit burn or it runs on battery.');return `<div class='sq'>${q.map((k,i)=>`<div class='part' data-part='${{burn:'prop',arr:'power',ant:'comms'}[k]||'bus'}'><span class='mu'>${i+1}</span> ${SQN[k]}<br><button data-a='sq' data-i='${i}' data-d='-1'>&lt;</button><button data-a='tf' data-k='${k}'>TEST</button><button data-a='sq' data-i='${i}' data-d='1'>&gt;</button></div>`).join('')}</div>${bad.map(t=>`<div class='warn wa'>${t}</div>`).join('')||`<div class='warn ok'>Sequence nominal.</div>`}`}
+function refresh(){const a=$('#sch');if(!a)return;a.innerHTML=schem();$('#tel').innerHTML=telem();$('#dsh').innerHTML=dash(calc());$('#seq').innerHTML=seqHTML()}
+document.body.addEventListener('input',e=>{const k=e.target.dataset.s;if(!k)return;S[k]=+e.target.value;if(k==='fuel')S.result=null;$('#'+k+'v').textContent=S[k]+'%';refresh()});
+document.body.addEventListener('mousemove',e=>{const sp=e.target.closest('.space');if(sp){const r=sp.getBoundingClientRect();sp.style.setProperty('--px',((e.clientX-r.left)/r.width-.5).toFixed(2));sp.style.setProperty('--py',((e.clientY-r.top)/r.height-.5).toFixed(2))}const el=e.target.closest('[data-part]'),k=el?el.dataset.part:null,tp=$('#tip');if(k!==HK){document.querySelectorAll('.hl').forEach(x=>x.classList.remove('hl'));HK=k;if(k){document.querySelectorAll('[data-part="'+k+'"]').forEach(x=>x.classList.add('hl'));tp.innerHTML=specOf(k,el.dataset.k?el.dataset.i:null);sfx('t')}}tp.style.display=k?'block':'none';if(k){tp.style.left=Math.min(e.clientX+14,innerWidth-250)+'px';tp.style.top=e.clientY+14+'px'}});
+const act={nav:d=>{S.view=d.v;render()},sq:d=>{const i=+d.i,j=i+ +d.d,q=S.seq;if(j<0||j>=q.length)return;[q[i],q[j]]=[q[j],q[i]];render()},tf:d=>{S.fire=d.k;refresh();sfx(d.k==='burn'?'i':'s');setTimeout(()=>{S.fire=null;refresh()},1800)},mute:()=>{S.snd=S.snd?0:1;render()},spd:d=>{S.spd=+d.v;render()},
+pick:d=>{reset(MIS.find(x=>x.id===d.i));render()},
+inst:d=>{S.inst=S.inst.includes(d.i)?S.inst.filter(x=>x!==d.i):[...S.inst,d.i];G3.hl=S.inst.includes(d.i)?'i:'+d.i:null;S.result=null;render()},
+comp:d=>{S.comp[d.k]=d.i;G3.hl=d.k;S.tc.comp=1;S.result=null;render()},
+lv:d=>{S.lv=d.i;S.tc.lv=1;S.result=null;render()},orb:d=>{S.orb=d.i;S.tc.orb=1;S.result=null;render()},traj:d=>{S.traj=d.i;S.result=null;render()},
+run:()=>run(),
+tstart:()=>{reset(MIS[0]);S.tut=0;S.view='control';render()},
+tnext:()=>{if(!TUT[S.tut][2]())return;S.tut++;if(S.tut>=TUT.length){S.tut=null;S.view='briefing';render();return}S.view=TUT[S.tut][0];render()},
+tskip:()=>{S.tut=null;S.view='briefing';render()}};
+document.body.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el||(S.busy&&el.dataset.a!=='nav'))return;sfx({nav:'t',inst:'s',comp:'s',lv:'s',orb:'s',traj:'s',run:'i',tstart:'t',tnext:'t'}[el.dataset.a]);act[el.dataset.a](el.dataset)});
+
+S.voice=1;S.fails=0;let VO=null,VT=0;
+function pickV(){if(!window.speechSynthesis)return;const v=speechSynthesis.getVoices();VO=v.find(x=>/Google UK English Male|Daniel|Arthur|Oliver|Malcolm/i.test(x.name))||v.find(x=>/en-GB/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null}
+if(window.speechSynthesis){speechSynthesis.onvoiceschanged=pickV;pickV()}
+function say(t){return new Promise(r=>{let d=0;const fin=()=>{if(!d){d=1;r()}};if(!S.voice||!window.speechSynthesis){setTimeout(fin,t.length*55);return}speechSynthesis.cancel();setTimeout(fin,t.length*120+3000);const ps=t.match(/[^.!?;:]+[.!?;:]*/g)||[t];ps.forEach((p,i)=>{const u=new SpeechSynthesisUtterance(p.trim());if(VO)u.voice=VO;u.lang='en-GB';u.pitch=.45;u.rate=.8;if(i===ps.length-1)u.onend=fin;speechSynthesis.speak(u)})})}
+const VS=[['control','The Control Room','Behold your control room. The bar above holds seven stages. You shall visit each in order, from the briefing to the final report.','nav'],
+['briefing','1. The Briefing','First, the briefing. It names the science goals, the budget and the days available. Every decision serves these goals.','main .card'],
+['designer','2. The Designer','Next, the designer. Select instruments, which perform the science, then choose a power source, a radio and an engine.','[data-i="img"]'],
+['resources','3. Resource Meters','The meters compare what you use against what you have. Keep them green. Amber is perilous, and red is ruin.','.mt'],
+['launch','4. Launch Setup','Then choose a launch vehicle, an orbit and a trajectory. A heavy craft requires a mighty rocket.','[data-a="lv"]'],
+['sim','5. The Launch','Press this button to fly. Seven stages are calculated from your design. Nothing is left to chance.','#runb'],
+['report','6. The Report','Finally, the report, which explains what worked and what must improve.','main .card'],
+[null,'My Judgement','Should you fail, I shall explain your error twice, with patience befitting a monarch. A third time, however, and graciousness shall depart this court. Now, I shall guide you by hand.','']];
+let VK=0;
+async function playVid(){const k=++VK;$('#v0').style.display='none';$('#v1').style.display='block';reset(MIS[0]);S.inst=['img'];const fr=$('#vf'),bx=$('#vw');
+for(const [v,t,s,q] of VS){if(k!==VK)return;$('#vt').textContent=t;$('#vc').textContent=s;
+if(v){S.result=v==='report'?evaluate():null;fr.innerHTML='<nav><b>MISSION DIRECTOR</b>'+NAV.map(n=>`<button class="${n[0]===v?'on':''}" data-v="${n[0]}">${n[1]}</button>`).join('')+'</nav><main>'+V[v]()+'</main>';bx.style.display='block';$('#vv').innerHTML='';const sc=bx.clientWidth/1000;fr.style.transform=`scale(${sc})`;bx.style.height=600*sc+'px';const e=fr.querySelector(q);if(e)e.classList.add('hlt')}else{bx.style.display='none';$('#vv').innerHTML='<div class="cr">♛</div>'}
+const p=$('#vp');p.style.transition='none';p.style.width='0';setTimeout(()=>{p.style.transition='width '+(s.length*.1)+'s linear';p.style.width='100%'},30);await say(s)}
+if(k===VK){endVid();act.tstart();tsay()}}
+function endVid(){VK++;window.speechSynthesis&&speechSynthesis.cancel();$('#vf').innerHTML='';$('#vid').classList.remove('on');if(S.tut===null){S.mission=null;S.inst=[];S.result=null;S.view='control';render()}}
+
+const ROAST=['Remarkable. I presumed incompetence of this calibre demanded effort, yet you achieve it with serene, effortless abandon.','Thrice I have laid the answer at your feet like a silver salver, and thrice you have trodden it into the carpet. Your design is, frankly, absolutely fucked.','How perfectly fatuous. A sundial possesses greater aptitude for rocketry than you, and it is not even permitted to move.','Magnificent. You have transformed a simple instruction into a monument of obtuse, gormless folly. Posterity shall weep, then laugh.','I have tutored kings, Director. I have tutored regents. Never have I witnessed a mind so benighted that it defeats a fully explained answer.','Your spacecraft is a triumph of ambition over intellect, and a catastrophe in every other respect. Utterly, magnificently, gloriously fucked up.'];
+function hint(R){const s=R.st,c=R.c,i=s.findIndex(x=>x.l==='fail'),j=i>=0?i:s.findIndex(x=>x.l==='warn'),k=j<0?6:j,o=!R.fit?' Furthermore, your orbit does not match the mission target; choose an orbit the briefing permits.':'';
+return[[`The craft weighs ${f1(c.mass)} kilograms, yet this launcher lifts only ${f1(c.cap)} to that orbit.`,'Shed mass by lighter components, or hire a mightier launch vehicle.'],['Separation is sound.','Review your launch vehicle.'],
+[`You require ${f1(c.dvN)} metres per second of delta-v, yet command only ${f1(c.dvA)}.${o}`,'Fit a stronger propulsion system, or fly the low-energy transfer, then verify your orbit.'+o],
+['Your instruments are starved of power, or absent, or too hot to function.','Enlarge the solar array, fly fewer instruments, or fit a better thermal system.'],
+['Your storage cannot buffer the data between ground contacts.','Select a larger storage unit, or carry instruments that produce less data.'],
+[`The downlink carries ${f1(c.down)} gigabytes daily, yet the data demands more.`,'Install a faster radio, or reduce the data your instruments produce.'],
+['The science goals were not met.'+o,'Choose instruments whose purposes match the goals in the briefing, and power them properly.'+o]][k]}
+function kshow(h,t,r){$('#king').className='on'+(r?' roast':'');$('#kh').textContent=h;$('#kt').textContent=t;say(t)}
+function judge(R){if(R.out==='success'){S.fails=0;kshow('Triumph','Splendid. I braced for calamity, and you delivered excellence. I am very nearly moved.');return}
+const n=++S.fails,h=hint(R);if(n===1)kshow('Explanation 1 of 2','Alas, the mission has faltered. '+h[0]);else if(n===2)kshow('Explanation 2 of 2','Once more it falters. Attend closely. '+h[1]);else kshow('Royal Reproach',ROAST[(n-3)%ROAST.length]+' Since you plainly require it: '+h[1],1)}
+Object.assign(act,{vid:()=>{$('#vid').classList.add('on');$('#v0').style.display='block';$('#v1').style.display='none'},vstart:playVid,vskip:endVid,voice:()=>{S.voice=S.voice?0:1;speechSynthesis&&speechSynthesis.cancel();render()},kclose:()=>{speechSynthesis&&speechSynthesis.cancel();$('#king').className='';S.view=S.tut!==null?TUT[S.tut][0]:'designer';render()}});
+
+let LS=-1;function tsay(){if(S.tut!==null&&S.tut!==LS){LS=S.tut;say(TUT[S.tut][1])}}
+['tstart','tnext'].forEach(n=>{const o=act[n];act[n]=d=>{o(d);tsay()}});
+function spot(){const s=$('#spot'),t=S.tut;if(t===null||!TUT[t][3]||$('#vid').classList.contains('on')||$('#king').classList.contains('on')){s.style.display='none';return}
+const[q,i]=TUT[t][3].split('|'),L=document.querySelectorAll(q),el=L[i||0]||L[0];if(!el){s.style.display='none';return}
+const r=el.getBoundingClientRect();if(r.top<50||r.bottom>innerHeight-120){el.scrollIntoView({block:'center',behavior:'smooth'})}
+s.style.cssText=`display:block;left:${r.left-5}px;top:${r.top-5}px;width:${r.width+4}px;height:${r.height+4}px`;s.dataset.l=TUT[t][4]?'CLICK HERE':'LOOK HERE';s.className=r.top<45?'dn':''}
+setInterval(()=>{spot();if(S.tut!==null&&TUT[S.tut][4]&&!S.busy&&TUT[S.tut][2]()&&!$('#king').classList.contains('on'))act.tnext()},350);
+$('#vid').classList.add('on');
+render();
+</script></body></html>

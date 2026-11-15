@@ -1,0 +1,941 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Mission Candidate</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Nunito:wght@500;700;800&family=Space+Mono:wght@400;700&display=swap">
+<style>
+/* Layout: a night-sky storybook. Crew strip on top, one scene at a time below. Dark by choice: the whole game happens after dark. */
+:root{
+  --night:#0e1b2d;
+  --night2:#16283f;
+  --ink:#0a1422;
+  --line:#2b4468;
+  --paper:#e9f2ee;
+  --paper-ink:#15222f;
+  --text:#eef3fb;
+  --muted:#9db0cc;
+  --orange:#ff8a3d;
+  --yellow:#ffd24a;
+  --aqua:#4ed1c0;
+  --pink:#ff7aa8;
+  --red:#ff5d6c;
+  --blue:#7fb4ff;
+  --display:"Bowlby One","Arial Black",system-ui,sans-serif;
+  --body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Space Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--night)}
+body{margin:0;color:var(--text);font-family:var(--body);font-size:16px;line-height:1.45;font-weight:500;
+  background:
+    radial-gradient(1.5px 1.5px at 12% 18%,#fff8 50%,transparent 51%),
+    radial-gradient(1.5px 1.5px at 78% 9%,#fff7 50%,transparent 51%),
+    radial-gradient(1px 1px at 41% 33%,#fff6 50%,transparent 51%),
+    radial-gradient(1.5px 1.5px at 90% 55%,#fff6 50%,transparent 51%),
+    radial-gradient(1px 1px at 22% 70%,#fff6 50%,transparent 51%),
+    radial-gradient(1px 1px at 60% 82%,#fff5 50%,transparent 51%),
+    linear-gradient(180deg,#0b1626,#13243b 70%,#1a2f4a);
+  background-attachment:fixed;
+  padding-block:16px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));}
+#app{max-width:1120px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.05;letter-spacing:.01em;text-wrap:balance}
+h1{font-size:clamp(46px,10vw,104px);color:var(--yellow);text-shadow:4px 4px 0 var(--orange),8px 8px 0 var(--ink)}
+h2{font-size:clamp(26px,4.5vw,40px)}
+h3{font-size:19px}
+p{margin:0 0 10px;max-width:66ch}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.col{display:flex;flex-direction:column;gap:10px}
+.btn{font-family:var(--display);font-size:16px;letter-spacing:.02em;border:3px solid var(--ink);background:var(--night2);color:var(--text);padding:10px 18px;border-radius:12px;cursor:pointer;min-height:44px;box-shadow:0 4px 0 var(--ink);transition:transform .08s,box-shadow .08s}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.go{background:var(--orange);color:#2a1300}
+.btn.alt{background:var(--aqua);color:#032a25}
+.btn.small{font-size:14px;padding:6px 12px;min-height:36px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+input[type=text]{font-family:var(--body);font-weight:800;font-size:18px;border:3px solid var(--ink);background:var(--paper);color:var(--paper-ink);padding:10px 14px;border-radius:12px;min-height:46px;width:100%;max-width:260px}
+.card{background:var(--night2);border:3px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--ink);padding:16px;min-width:0}
+.card.paper{background:var(--paper);color:var(--paper-ink)}
+.say{display:flex;gap:12px;align-items:flex-start;margin:14px 0}
+.say .bub{position:relative;background:var(--paper);color:var(--paper-ink);border:3px solid var(--ink);border-radius:18px;padding:12px 16px;box-shadow:4px 4px 0 var(--ink);font-weight:700;max-width:68ch}
+.say .bub::before{content:"";position:absolute;left:-12px;top:20px;border:9px solid transparent;border-right:12px solid var(--ink)}
+.say .bub::after{content:"";position:absolute;left:-7px;top:22px;border:7px solid transparent;border-right:9px solid var(--paper)}
+.say .nm{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-bottom:2px}
+.say svg{flex:none}
+.crew{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px}
+@media (max-width:640px){.crew{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.seat{display:flex;gap:10px;align-items:center;background:var(--night2);border:3px solid var(--ink);border-radius:14px;padding:8px 10px;min-width:0;text-align:left;color:var(--text);font-family:var(--body);cursor:default}
+button.seat{cursor:pointer}
+.seat .who{min-width:0}
+.seat b{display:block;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.seat small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.seat.mine{box-shadow:0 0 0 3px var(--blue)}
+.seat.open{opacity:.75;border-style:dashed}
+.chip{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--muted);white-space:nowrap}
+.chip.ok{border-color:var(--aqua);color:var(--aqua)}
+.chip.bad{border-color:var(--red);color:var(--red)}
+.chip.warn{border-color:var(--yellow);color:var(--yellow)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.opt{display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--night);border:3px solid var(--line);border-radius:14px;padding:12px;color:var(--text);font-family:var(--body);cursor:pointer;min-width:0}
+.opt:hover:not(:disabled){border-color:var(--blue)}
+.opt[aria-pressed="true"]{border-color:var(--yellow);background:#1b2f4b;box-shadow:inset 0 0 0 2px var(--yellow)}
+.opt:disabled{opacity:.5;cursor:not-allowed}
+.opt .nm{font-family:var(--display);font-size:17px}
+.opt .ds{font-size:14px;color:var(--muted);font-weight:500}
+.opt .sp{font-family:var(--mono);font-size:11px;color:var(--text)}
+.opt .why{font-family:var(--mono);font-size:11px;color:var(--red)}
+.star{color:var(--yellow);font-family:var(--mono);font-size:11px}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.tab{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:15px;border:3px solid var(--ink);background:var(--night);color:var(--muted);border-radius:12px;padding:4px 12px 4px 6px;cursor:pointer;min-height:44px}
+.tab[aria-selected="true"]{background:var(--night2);color:var(--text);box-shadow:0 0 0 3px var(--blue)}
+.design{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+@media (max-width:860px){.design{grid-template-columns:1fr}}
+.vab{position:sticky;top:10px;display:flex;flex-direction:column;gap:12px}
+.vab svg{width:100%;height:auto;max-height:460px;background:repeating-linear-gradient(0deg,#173052 0 1px,transparent 1px 24px),repeating-linear-gradient(90deg,#173052 0 1px,transparent 1px 24px),#0f2340;border-radius:12px;border:3px solid var(--ink)}
+.stepper{display:flex;align-items:center;gap:8px}
+.stepper .v{font-family:var(--mono);font-weight:700;min-width:28px;text-align:center}
+.lbl{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-width:110px}
+.ctl{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:10px 0}
+.gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:8px;margin-bottom:14px}
+.g{background:var(--night2);border:3px solid var(--ink);border-radius:12px;padding:8px 10px;min-width:0}
+.g .top{display:flex;justify-content:space-between;gap:6px;font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.g .top b{color:var(--text);font-weight:700}
+.g .bar{height:10px;border-radius:6px;background:var(--ink);margin-top:6px;overflow:hidden}
+.g .bar i{display:block;height:100%;background:var(--aqua)}
+.g.warn .bar i{background:var(--yellow)}.g.bad .bar i{background:var(--red)}
+.g.crit{box-shadow:0 0 0 2px var(--yellow)}
+.win{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;align-items:end;min-height:190px;margin:10px 0}
+.day{display:flex;flex-direction:column;justify-content:flex-end;gap:4px;align-items:stretch;background:var(--night);border:3px solid var(--line);border-radius:12px;padding:6px 3px;cursor:pointer;color:var(--text);font-family:var(--mono);font-size:11px;text-align:center;min-width:0}
+.day[aria-pressed="true"]{border-color:var(--yellow);background:#1b2f4b}
+.day .b{border-radius:4px;background:var(--orange);width:100%}
+.day small{font-size:9px;color:var(--pink);min-height:22px;line-height:1.1}
+table{border-collapse:collapse;width:100%;font-size:14px}
+td,th{padding:5px 8px;border-bottom:2px solid var(--line);text-align:left}
+th{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:400}
+.tscroll{overflow-x:auto}
+canvas#fcv{width:100%;height:auto;display:block;border-radius:16px;border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);background:#000}
+.events{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:16px}
+.ev h3{margin:8px 0 6px}
+.ev .ch{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.ev .res{border-left:5px solid var(--yellow);padding:2px 0 2px 12px;margin-top:10px}
+.pips{font-family:var(--mono);letter-spacing:.2em;color:var(--yellow)}
+.sug{font-family:var(--mono);font-size:11px;color:var(--aqua);margin-top:6px}
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:16px 0}
+.score div{background:var(--night2);border:3px solid var(--ink);border-radius:14px;padding:10px 12px;box-shadow:4px 4px 0 var(--ink)}
+.score b{display:block;font-family:var(--display);font-size:38px;line-height:1;color:var(--yellow)}
+.score span{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.big{font-family:var(--display);font-size:clamp(34px,7vw,64px);line-height:1}
+.good{color:var(--aqua)}.bad{color:var(--red)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--paper);color:var(--paper-ink);border:3px solid var(--ink);border-radius:12px;padding:10px 16px;font-weight:800;box-shadow:4px 4px 0 var(--ink);z-index:20;max-width:90vw}
+.hero{padding:24px 0 8px;max-width:760px}
+.hero .tag{font-family:var(--display);font-size:clamp(18px,3.5vw,26px);color:var(--aqua);margin:16px 0}
+.lb{counter-reset:r}
+.lb li{counter-increment:r;list-style:none;display:flex;gap:10px;align-items:baseline;border-bottom:2px solid var(--line);padding:6px 0}
+.lb li::before{content:counter(r);font-family:var(--display);color:var(--yellow);min-width:22px}
+.lb .sc{margin-left:auto;font-family:var(--display);color:var(--yellow)}
+ul.plain{margin:0;padding-left:18px}
+ul.plain li{margin:4px 0}
+.code{font-family:var(--display);font-size:clamp(34px,8vw,58px);letter-spacing:.12em;color:var(--yellow)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div id="app"></div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+"use strict";
+/* ================= DATA ================= */
+const ROLES=["cmd","eng","sci","ops"];
+const ROLE={
+  cmd:{name:"Commander",short:"Goal and launch day",color:"#ff8a3d",who:"Mara Venn",helmet:"#ff8a3d"},
+  eng:{name:"Engineer",short:"Rocket and spacecraft",color:"#ffd24a",who:"Teo Barros",helmet:"#ffd24a"},
+  sci:{name:"Scientist",short:"Instruments",color:"#4ed1c0",who:"Dr. Ilse Hart",helmet:"#4ed1c0"},
+  ops:{name:"Flight Director",short:"Radio, ground and money",color:"#ff7aa8",who:"Bimo Santoso",helmet:"#ff7aa8"},
+  dir:{name:"Director",short:"",color:"#9db0cc",who:"Director Okoro",helmet:"#9db0cc"}
+};
+const SCEN={
+  leo:{id:"leo",name:"Greenhouse Eye",level:"Easy",dest:"low Earth orbit",dist:1,dv:9400,budget:520,sciRef:100,maxInst:3,critical:"data",
+    blurb:"Watch the planet breathe from 400 km up. Lots of data, short trip.",
+    objectives:[{name:"Track crops and forests",tag:"land"},{name:"Watch clouds and storms",tag:"air"}],
+    windows:[{pen:160,gap:false},{pen:70,gap:false},{pen:0,gap:false},{pen:40,gap:true},{pen:120,gap:false},{pen:220,gap:false},{pen:340,gap:true}],
+    analog:"Landsat 9, which images Earth's land every day to track change over decades"},
+  moon:{id:"moon",name:"Moon Mapper",level:"Medium",dest:"the Moon",dist:.6,dv:11400,budget:820,sciRef:110,maxInst:3,critical:"dv",
+    blurb:"A flyby of the Moon. The rocket has to be big and efficient.",
+    objectives:[{name:"Find safe landing sites",tag:"terrain"},{name:"Search for water ice",tag:"ice"}],
+    windows:[{pen:420,gap:true},{pen:240,gap:false},{pen:90,gap:false},{pen:0,gap:true},{pen:110,gap:false},{pen:280,gap:false},{pen:520,gap:true}],
+    analog:"the Lunar Reconnaissance Orbiter, which maps the Moon from orbit"},
+  mars:{id:"mars",name:"Red Relay",level:"Hard",dest:"Mars",dist:.35,dv:11900,budget:1250,sciRef:120,maxInst:4,critical:"link",
+    blurb:"A long trip to Mars. Every kilobit of radio link counts.",
+    objectives:[{name:"Relay for future rovers",tag:"relay"},{name:"Map rocks and minerals",tag:"rock"}],
+    windows:[{pen:600,gap:false},{pen:380,gap:true},{pen:150,gap:false},{pen:0,gap:true},{pen:70,gap:false},{pen:260,gap:true},{pen:480,gap:true}],
+    analog:"the Mars Reconnaissance Orbiter, which studies Mars and relays data from rovers"}
+};
+const ENG={
+  kestrel:{id:"kestrel",name:"Kestrel",ds:"Reliable all-rounder. Burns kerosene.",isp:310,atm:.9,thrust:850,mass:1.4,cost:22,color:"#c9ced9"},
+  anvil:{id:"anvil",name:"Anvil",ds:"Huge push, thirsty. Good for heavy liftoffs.",isp:295,atm:.88,thrust:2200,mass:4.2,cost:55,color:"#e0795a"},
+  whisper:{id:"whisper",name:"Whisper",ds:"Very efficient in space. Too weak for liftoff.",isp:450,atm:.55,thrust:190,mass:.7,cost:50,color:"#7fd3ff"}
+};
+const FUEL=10,DRY=.7,TCOST=8,G=9.81;
+const BUS={
+  small:{id:"small",name:"Small bus",mass:.8,pwr:2,cost:30,ds:"Light and cheap. About 2 kW of power."},
+  medium:{id:"medium",name:"Medium bus",mass:1.6,pwr:4,cost:70,ds:"Balanced. About 4 kW of power."},
+  large:{id:"large",name:"Large bus",mass:3.2,pwr:7,cost:130,ds:"Roomy and powerful. About 7 kW."}
+};
+const ANT={
+  small:{id:"small",name:"Small dish",mass:.1,rate:20,pwr:.3,cost:5,ds:"Slow link. Barely any power."},
+  medium:{id:"medium",name:"Medium dish",mass:.3,rate:60,pwr:.6,cost:14,ds:"A decent link."},
+  large:{id:"large",name:"Large dish",mass:.9,rate:150,pwr:1.2,cost:35,ds:"Fast link. Heavy and power hungry."}
+};
+const GND={
+  uni:{id:"uni",name:"University dish",factor:.4,reach:["leo"],cost:10,backup:false,ds:"Cheap. One dish, near Earth only."},
+  comm:{id:"comm",name:"Commercial network",factor:.75,reach:["leo","moon"],cost:30,backup:true,ds:"Several stations. Reaches the Moon."},
+  dsn:{id:"dsn",name:"Deep space antennas",factor:1,reach:["moon","mars"],cost:80,backup:true,ds:"Giant dishes. The only way to reach Mars."}
+};
+const MONTHS=[{m:3,mult:.6},{m:6,mult:.8},{m:12,mult:1},{m:24,mult:1.12}];
+const MCOST=4;
+const INST={
+  leo:[
+    {id:"msi",name:"Multispectral imager",mass:.5,pwr:.8,data:40,sci:30,cost:45,tags:["land"],ds:"Sees plants and soil in many colors."},
+    {id:"lidar",name:"Forest lidar",mass:.6,pwr:1.2,data:55,sci:30,cost:55,tags:["land"],ds:"Measures tree height with lasers. Lots of data."},
+    {id:"ir",name:"Infrared cloud sounder",mass:.4,pwr:.6,data:25,sci:26,cost:38,tags:["air"],ds:"Reads temperature through clouds."},
+    {id:"radar",name:"Rain radar",mass:.8,pwr:1.6,data:30,sci:28,cost:60,tags:["air"],ds:"Sees inside storms. Hungry for power."},
+    {id:"gas",name:"Gas spectrometer",mass:.3,pwr:.4,data:10,sci:18,cost:30,tags:["air","land"],ds:"Tracks carbon dioxide and methane."}],
+  moon:[
+    {id:"lalt",name:"Laser altimeter",mass:.4,pwr:.8,data:30,sci:28,cost:55,tags:["terrain"],ds:"Builds a 3D map of the ground."},
+    {id:"cam",name:"Imaging camera",mass:.6,pwr:.8,data:45,sci:30,cost:45,tags:["terrain"],ds:"Close-up pictures of landing sites."},
+    {id:"neut",name:"Neutron spectrometer",mass:.3,pwr:.5,data:8,sci:24,cost:35,tags:["ice"],ds:"Detects hydrogen under the surface."},
+    {id:"therm",name:"Thermal radiometer",mass:.4,pwr:1.4,data:15,sci:22,cost:40,tags:["ice","terrain"],ds:"Maps heat. Cold traps may hide ice."},
+    {id:"srad",name:"Sounding radar",mass:1,pwr:2.5,data:40,sci:32,cost:75,tags:["ice"],ds:"Looks beneath the surface. Heavy."}],
+  mars:[
+    {id:"relay",name:"Relay radio",mass:.7,pwr:1.2,data:20,sci:36,cost:60,tags:["relay"],ds:"Collects data from rovers and passes it home."},
+    {id:"cam",name:"Imaging camera",mass:.8,pwr:.9,data:30,sci:26,cost:55,tags:["rock","relay"],ds:"High-resolution surface pictures."},
+    {id:"spec",name:"Mineral spectrometer",mass:.5,pwr:1.1,data:15,sci:30,cost:50,tags:["rock"],ds:"Identifies rocks from orbit."},
+    {id:"srad",name:"Sounding radar",mass:1.2,pwr:3,data:25,sci:30,cost:85,tags:["rock"],ds:"Probes under the surface. Needs lots of power."},
+    {id:"wx",name:"Weather camera",mass:.4,pwr:.5,data:12,sci:16,cost:30,tags:["relay"],ds:"Watches dust storms that threaten landers."}]
+};
+const WIN_LEN=7;
+
+/* ================= HELPERS ================= */
+const $=(s,r)=>(r||document).querySelector(s);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const fmt=(n,d=0)=>Number(n).toFixed(d);
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function deepMerge(a,b){for(const k in b){const v=b[k];if(v&&typeof v==="object"&&!Array.isArray(v)){if(!a[k]||typeof a[k]!=="object")a[k]={};deepMerge(a[k],v);}else a[k]=v;}return a;}
+function clone(o){return JSON.parse(JSON.stringify(o));}
+let toastT=0;
+function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true},3200);}
+
+/* ================= STATE & NETWORK ================= */
+const Net={db:null,uid:null,doc:null,unsub:null,lbUnsub:null};
+let S=null,MODE="none"; // none | solo | crew
+const ME={id:"local",name:lsGet("mc_name")||"Pilot"};
+const UI={tab:"cmd",lb:[],lbState:"idle",code:"",err:"",joining:false};
+let pend=null,flushing=false;
+
+function newState(scen,hostId,code){
+  return {code,scen,crewName:"",hostId,phase:"lobby",story:0,created:Date.now(),
+    seats:{},ready:{},
+    design:{cmd:{objective:null,window:null},eng:{s1:{e:"kestrel",n:3,t:4},s2:{e:"whisper",t:1},s3:{e:"whisper",t:0},bus:"small",panels:0},sci:{inst:[]},ops:{ground:null,antenna:"small",months:6}},
+    flight:{launchAt:null},events:{},result:null};
+}
+const NOEV={cmd:null,eng:null,sci:null,ops:null};
+function resetDesign(s){const f=newState(s.scen,s.hostId,s.code);return {design:f.design,ready:{cmd:false,eng:false,sci:false,ops:false},events:{...NOEV},flight:{launchAt:null},result:null};}
+
+function patch(p){
+  if(MODE==="solo"){deepMerge(S,p);onState();return;}
+  if(MODE!=="crew")return;
+  deepMerge(S,p);onState();
+  pend=deepMerge(pend||{},p);flush();
+}
+async function flush(){
+  if(flushing)return;flushing=true;
+  try{while(pend){const p=pend;pend=null;try{await Net.doc.update(p);}catch(e){toast("Could not save that. Check your connection.");}}}
+  finally{flushing=false;}
+}
+function isHost(){return MODE==="solo"||(S&&S.hostId===ME.id);}
+function seat(role){return S&&S.seats&&S.seats[role]||null;}
+function myRole(){if(MODE!=="crew")return null;for(const r of ROLES){const s=seat(r);if(s&&s.id===ME.id)return r;}return null;}
+function canAct(role){if(MODE==="solo")return true;const s=seat(role);if(s)return s.id===ME.id;return S.hostId===ME.id;}
+function charName(role){const s=seat(role);return s&&s.name?s.name:ROLE[role].who;}
+function genCode(){const a="ABCDEFGHJKMNPQRSTUVWXYZ",d="23456789";let c="";for(let i=0;i<3;i++)c+=a[Math.floor(Math.random()*a.length)];return c+d[Math.floor(Math.random()*d.length)];}
+
+async function initNet(){
+  try{
+    if(!window.claude||!window.claude.use)return;
+    const db=await claude.use("db"),user=await claude.use("user");
+    if(!db||!user)return;
+    const id=await user.id();
+    if(!id)return;
+    Net.db=db;Net.uid=id;ME.id=id;
+    if(MODE==="none"){render();subLeaderboard();}
+  }catch(e){}
+}
+function subLeaderboard(){
+  if(!Net.db||Net.lbUnsub)return;
+  UI.lbState="loading";
+  const to=setTimeout(()=>{if(UI.lbState==="loading"){UI.lbState="slow";if(MODE==="none")render();}},10000);
+  try{
+    Net.lbUnsub=Net.db.collection("board").orderBy("score","desc").limit(8).onSnapshot(snap=>{
+      clearTimeout(to);UI.lb=snap.docs.map(d=>d.data());UI.lbState="ok";if(MODE==="none"||(S&&S.phase==="result"))render();
+    },()=>{clearTimeout(to);UI.lbState="err";});
+  }catch(e){UI.lbState="err";}
+}
+function subCrew(code){
+  Net.doc=Net.db.doc("crews/"+code);
+  Net.unsub=Net.doc.onSnapshot(snap=>{
+    if(!snap.exists){if(MODE==="crew"){toast("This crew no longer exists.");leave();}return;}
+    const d=clone(snap.data());
+    if(pend)deepMerge(d,pend);
+    S=d;onState();
+  },()=>toast("Lost the link to the crew."));
+}
+async function createCrew(){
+  if(!Net.db)return;
+  UI.err="";
+  try{
+    let code="";
+    for(let i=0;i<6;i++){code=genCode();const x=await Net.db.doc("crews/"+code).get();if(!x.exists)break;}
+    const st=newState("leo",ME.id,code);
+    st.crewName=ME.name+"'s crew";
+    st.seats={cmd:{id:ME.id,name:ME.name}};
+    await Net.db.doc("crews/"+code).set(st);
+    MODE="crew";S=st;UI.tab="cmd";lsSet("mc_code",code);subCrew(code);onState();
+  }catch(e){UI.err="Could not create a crew. Ask the owner to share this page with edit access.";render();}
+}
+async function joinCrew(code){
+  if(!Net.db)return;
+  code=(code||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+  if(code.length<3){UI.err="Type the code your friend sent you.";render();return;}
+  UI.err="";
+  try{
+    const x=await Net.db.doc("crews/"+code).get();
+    if(!x.exists){UI.err="No crew with that code.";render();return;}
+    const d=clone(x.data());
+    MODE="crew";S=d;lsSet("mc_code",code);subCrew(code);
+    const mine=myRole();
+    if(!mine){
+      const free=ROLES.find(r=>!seat(r));
+      if(free){UI.tab=free;patch({seats:{[free]:{id:ME.id,name:ME.name}}});}
+      else toast("The crew is full. You can watch.");
+    }else UI.tab=mine;
+    onState();
+  }catch(e){UI.err="Could not join. Ask the owner to share this page with edit access.";render();}
+}
+function leave(){
+  if(Net.unsub){Net.unsub();Net.unsub=null;}
+  stopFlight();
+  Net.doc=null;pend=null;S=null;MODE="none";UI.err="";render();
+}
+
+/* ================= MISSION MATH ================= */
+function derive(s){
+  const sc=SCEN[s.scen],D=s.design;
+  const e1=ENG[D.eng.s1.e],e2=ENG[D.eng.s2.e],bus=BUS[D.eng.bus],ant=ANT[D.ops.antenna];
+  const gr=D.ops.ground?GND[D.ops.ground]:null;
+  const insts=(D.sci.inst||[]).map(id=>INST[s.scen].find(i=>i.id===id)).filter(Boolean);
+  const obj=D.cmd.objective!=null?sc.objectives[D.cmd.objective]:null;
+  const win=D.cmd.window!=null?sc.windows[D.cmd.window]:null;
+  const mo=MONTHS.find(m=>m.m===D.ops.months)||MONTHS[1];
+  const n1=D.eng.s1.n,t1=D.eng.s1.t,t2=D.eng.s2.t,panels=D.eng.panels;
+  const payload=.5+bus.mass+panels*.15+sum(insts.map(i=>i.mass))+ant.mass;
+  const e3=ENG[D.eng.s3.e],t3=D.eng.s3.t;
+  const m03=t3>0?payload+e3.mass+t3*(FUEL+DRY):payload;
+  const dv3=t3>0?e3.isp*G*Math.log(m03/(m03-t3*FUEL)):0;
+  const m02=m03+e2.mass+t2*(FUEL+DRY),prop2=t2*FUEL;
+  const m01=m02+n1*e1.mass+t1*(FUEL+DRY),prop1=t1*FUEL;
+  const dv1=e1.isp*e1.atm*G*Math.log(m01/(m01-prop1));
+  const twr2=e2.thrust/(m02*G);
+  let dv2=e2.isp*G*Math.log(m02/(m02-prop2));
+  const lowTwr2=twr2<.2;
+  if(lowTwr2)dv2*=.9;
+  const twr=n1*e1.thrust/(m01*G);
+  const dvTotal=dv1+dv2+dv3,pen=win?win.pen:0,req=sc.dv+pen;
+  const supply=bus.pwr+panels*1.5,draw=.6+ant.pwr+sum(insts.map(i=>i.pwr));
+  const powerRatio=Math.min(1,supply/draw),powerSpare=supply-draw;
+  const data=sum(insts.map(i=>i.data)),cap=gr?ant.rate*gr.factor*sc.dist:0;
+  const dataRatio=data>0?Math.min(1,cap/data):1;
+  const s3cost=t3>0?e3.cost+t3*TCOST:0;
+  const cost=n1*e1.cost+t1*TCOST+e2.cost+t2*TCOST+s3cost+bus.cost+panels*6+sum(insts.map(i=>i.cost))+ant.cost+(gr?gr.cost:0)+mo.m*MCOST;
+  const costParts={launcher:n1*e1.cost+t1*TCOST+e2.cost+t2*TCOST+s3cost,craft:bus.cost+panels*6+ant.cost,science:sum(insts.map(i=>i.cost)),ground:(gr?gr.cost:0)+mo.m*MCOST};
+  let raw=0;
+  insts.forEach(i=>{raw+=i.sci*(obj&&i.tags.includes(obj.tag)?1.4:.8);});
+  const sciBase=raw*dataRatio*powerRatio*mo.mult;
+  const problems=[];
+  const P=(role,sev,msg)=>problems.push({role,sev,msg});
+  if(!obj)P("cmd","block","Pick what we want to learn. Everything else follows from that.");
+  if(!win)P("cmd","block","Pick a launch day. Some days cost more fuel, and some leave a gap in radio contact.");
+  if(twr<1)P("eng","warn",`Liftoff push is only ${fmt(twr,2)} times our weight. She will not leave the pad. More engines, or less rocket.`);
+  else if(twr<1.25)P("eng","info",`Liftoff push is ${fmt(twr,2)}. That is thin. Rockets like 1.3 or more at the pad.`);
+  if(dvTotal<req)P("eng","warn",`We are ${fmt(req-dvTotal)} m/s short of ${sc.dest}. More fuel, a better upper engine, or a lighter payload.`);
+  if(lowTwr2)P("eng","info","The upper stage engine is too weak for its weight, so a long burn wastes some delta-v to gravity.");
+  if(!insts.length)P("sci","block","We have nothing to measure with. Pick at least one instrument.");
+  if(powerRatio<.98)P("sci","soft",`The instruments want ${fmt(draw,1)} kW and the craft makes ${fmt(supply,1)}. They will run at ${fmt(powerRatio*100)}%. Add panels or a bigger bus.`);
+  if(!gr)P("ops","block","Choose who listens for our radio signal.");
+  else if(!gr.reach.includes(s.scen))P("ops","block",`${gr.name} cannot reach ${sc.dest}.`);
+  if(gr&&gr.reach.includes(s.scen)&&dataRatio<.98)P("ops","soft",`The instruments make ${fmt(data)} Mb/s but we can only receive ${fmt(cap)}. We lose ${fmt((1-dataRatio)*100)}% of the data.`);
+  if(cost>sc.budget)P("ops","block",`We are $${fmt(cost-sc.budget)}M over budget. Nothing flies until that is fixed.`);
+  const blocked=problems.some(p=>p.sev==="block");
+  return {sc,D,e1,e2,e3,bus,ant,gr,insts,obj,win,mo,n1,t1,t2,t3,panels,payload,m01,m02,m03,dv1,dv2,dv3,dvTotal,req,pen,twr,twr2,supply,draw,powerRatio,powerSpare,data,cap,dataRatio,cost,costParts,sciBase,problems,blocked,dvRatio:dvTotal/req};
+}
+function flightOutcome(X){
+  if(X.twr<1)return{kind:"pad"};
+  if(X.dvTotal<X.req)return{kind:"short",frac:X.dvTotal/X.req};
+  return{kind:"ok",frac:1};
+}
+
+/* ================= STORY AND EVENTS ================= */
+function briefing(){
+  return [
+    {w:"dir",t:"Test range, 5:40 in the morning. Director Okoro waits at the foot of the hangar steps with a thermos and a very short speech."},
+    {w:"dir",t:"“You four made the list. Nobody gets a seat on anything yet. First the mission has to exist: a question worth asking, a rocket that can reach it, a radio that can hear it, and someone to pay for it all.”"},
+    {w:"cmd",t:"“I flew rocket planes for six years. I never had to decide where they went.”"},
+    {w:"dir",t:"“Today you do. Pick the goal, pick the day, build the thing. Then somebody gets to fly it. Maybe you.”"}
+  ];
+}
+const EVENTS={
+  eng:{title:"Pressure is falling",
+    text:X=>`Ninety seconds after liftoff, the first stage chamber pressure starts to slide. ${X.dvRatio<1.03?"There is almost no spare fuel.":"There is a little spare fuel."} Teo has a hand on the cutoff switch.`,
+    opts:[
+      {l:"Throttle back ten percent until it steadies",f:X=>X.dvRatio>=1.03?{s:3,t:"The engine settles and the extra seconds of burn fit inside the spare fuel. On target."}:{s:0,t:"The engine settles, but there was no spare fuel for the longer burn. Burnout comes short of orbit."}},
+      {l:"Keep full thrust and trust the margins",f:X=>X.n1<=3?{s:2,t:"The dip clears by itself. With only a few engines there is less that can go wrong."}:{s:0,t:`With ${X.n1} engines in the cluster, one sick engine drags the others off balance. The stage tumbles.`}},
+      {l:"Shut it down early and stage now",f:X=>X.dvRatio>=1.06?{s:2,t:"Early staging wastes some fuel, but you carried plenty. Safe, if a bit expensive."}:{s:0,t:"Early staging throws away fuel you needed. The upper stage cannot make it up."}}
+    ]},
+  ops:{title:"The radio goes quiet",
+    text:X=>`In orbit the signal drops during the key burn. ${X.win&&X.win.gap?"Your launch day was one of the days with a radio gap, so this is no surprise to Bimo.":"This was not a gap day. Something is wrong on the ground."} Data is piling up on board.`,
+    opts:[
+      {l:"Switch to the backup ground station",f:X=>X.gr&&X.gr.backup?{s:3,t:"Another station picks up the signal within a minute. Nothing is lost."}:{s:1,t:"There is no backup station. You recover some of the data on the next pass."}},
+      {l:"Wait for the next pass",f:X=>X.win&&X.win.gap?{s:0,t:"The next pass is hours away. Half of the data from the burn is lost."}:{s:2,t:"The next pass starts soon. You recover almost all of the data."}},
+      {l:"Send commands blind and hope",f:X=>({s:1,t:"The commands land, mostly. A few readings are garbled. Bimo asks you not to do that again."})}
+    ]},
+  sci:{title:"A surprise worth chasing",
+    text:X=>`The instruments catch something the team did not plan for: a ${X.sc.id==="leo"?"huge storm swirling off the coast":X.sc.id==="moon"?"fresh crater with bright rims":"dust storm racing across the plains"}. Ilse is already writing numbers on her sleeve.`,
+    opts:[
+      {l:"Divert extra power to the instruments",f:X=>X.powerSpare>=.5?{s:3,t:"There is spare power, so the extra observations cost nothing. A bonus dataset, and a paper in the making."}:{s:0,t:"There was no spare power. The craft browns out and the instruments reset. Some of the science is lost."}},
+      {l:"Stick to the plan",f:X=>({s:2,t:"Safe. The surprise is logged for a later mission."})},
+      {l:"Delay the downlink and keep imaging",f:X=>X.dataRatio>=.85?{s:2,t:"The link is fast enough to catch up later. You get most of both."}:{s:1,t:"The link is already struggling. The extra images wait a long time in the queue."}}
+    ]},
+  cmd:{title:"The spin",
+    text:X=>`A thruster sticks on. The craft starts to roll, and the rate keeps climbing. Mara is the only one who has felt something like this before, in a rocket plane. ${X.dvRatio<1.05?"Fuel is tight.":""}`,
+    opts:[
+      {l:"Cut the main thrusters and stop the spin with the small ones",f:X=>({s:3,t:"The roll damps out. You lose some time, but the craft is safe. Mara's voice stays level the whole way."})},
+      {l:"Fire the same thruster the other way",f:X=>({s:0,t:"The fault is in the thruster itself, so the fix makes it worse. The roll passes the limit and the craft is lost."})},
+      {l:"Wait and diagnose first",f:X=>X.dvRatio>=1.05?{s:1,t:"The spin runs for a minute while you diagnose. It costs fuel, but you had enough."}:{s:0,t:"The spin eats fuel you did not have. Control is lost before you find the fault."}}
+    ]}
+};
+function evChoice(s,role){const e=s.events&&s.events[role];return e&&e.choice!=null?e.choice:null;}
+function evResult(X,role,idx){return EVENTS[role].opts[idx].f(X);}
+
+function evaluate(s){
+  const X=derive(s),out=flightOutcome(X);
+  const ev={};let dsum=0;
+  ROLES.forEach(r=>{const c=evChoice(s,r);const idx=c==null?1:c;ev[r]={idx,...evResult(X,r,idx),title:EVENTS[r].title,opt:EVENTS[r].opts[idx].l,chosen:c!=null};});
+  const flew=out.kind==="ok";
+  const lost=!flew||ev.eng.s===0||ev.cmd.s===0;
+  let sci=X.sciBase;
+  if(ev.sci.s===3)sci*=1.15;if(ev.sci.s===0)sci*=.7;
+  if(ev.ops.s===0)sci*=.6;
+  if(ev.ops.s===1)sci*=.95;
+  const sciPct=lost?0:sci/X.sc.sciRef;
+  dsum=sum(ROLES.map(r=>flew?ev[r].s:0));
+  const scSuccess=lost?0:40;
+  const scSci=Math.round(Math.min(25,25*sciPct));
+  const eff=Math.round((lost?.4:1)*15*clamp((X.sc.budget-X.cost)/(.35*X.sc.budget),0,1));
+  const dec=Math.round(20*dsum/12);
+  const total=scSuccess+scSci+eff+dec;
+  return {X,out,ev,lost,sciPct,scSuccess,scSci,eff,dec,total,flew,
+    rating:lost?"Mission lost":total>=85?"Flagship mission":total>=65?"Solid success":"Scraped through"};
+}
+function reportLines(R){
+  const X=R.X,L=[];
+  if(R.out.kind==="pad")L.push(`The rocket pushed with ${fmt(X.twr,2)} times its own weight. Anything under 1.0 cannot lift off. Try more engines or fewer tanks.`);
+  else if(R.out.kind==="short")L.push(`The rocket had ${fmt(X.dvTotal)} m/s of delta-v and the trip needed ${fmt(X.req)}. It ran out of fuel ${fmt((1-R.out.frac)*100)}% short. Delta-v is how much a rocket can change its speed.`);
+  else L.push(`Delta-v: ${fmt(X.dvTotal)} m/s available against ${fmt(X.req)} needed${X.pen?`, including ${X.pen} extra for the launch day you chose`:""}. A margin of ${fmt((X.dvRatio-1)*100)}% gave room for surprises.`);
+  if(R.flew){
+    L.push(`Radio link: instruments made ${fmt(X.data)} Mb/s and the link carried ${fmt(X.cap)}. You kept ${fmt(X.dataRatio*100)}% of the data.`);
+    L.push(`Power: ${fmt(X.draw,1)} kW wanted, ${fmt(X.supply,1)} kW made, so instruments ran at ${fmt(X.powerRatio*100)}%.`);
+    L.push(`Goal: ${X.obj.name}. Instruments that match the goal count 1.4 times; the rest count 0.8 times. Operating for ${X.mo.m} months scaled the result by ${X.mo.mult}.`);
+    ROLES.forEach(r=>L.push(`${ROLE[r].name} decision, "${R.ev[r].opt}": ${R.ev[r].t}`));
+  }
+  L.push(`Budget: $${fmt(X.cost)}M of $${X.sc.budget}M. Launcher $${X.costParts.launcher}M, spacecraft $${X.costParts.craft}M, instruments $${X.costParts.science}M, ground and operations $${X.costParts.ground}M.`);
+  return L;
+}
+function epilogue(R,s){
+  const cmd=charName("cmd");
+  if(R.lost)return `The control room goes quiet. Director Okoro sets down her thermos. “That is what test flights are for,” she says. “Go find out why. Then build it again.” ${cmd} is already rereading the telemetry.`;
+  if(R.ev.cmd.s>=3)return `The craft is safe and the data is flowing. Weeks later, Director Okoro calls ${cmd} into her office. “The way you handled the spin is why you are in the left seat on the next one.” It is the first mission, and it will not be the last.`;
+  return `The craft survives and the data comes home. Director Okoro tells the crew: “Good first mission. Next time, we will know more.” Nobody leaves the control room for a while.`;
+}
+
+/* ================= ROCKET DRAWING ================= */
+function rocketGeom(D){
+  const parts=[];let y=0;
+  const s1=D.eng.s1,s2=D.eng.s2,n=s1.n,bw=20,gap=3,wt=n*(bw+gap)-gap;
+  const add=(o)=>{y-=o.h;parts.push({...o,y});};
+  for(let i=0;i<n;i++){const x=-wt/2+i*(bw+gap)+bw/2;parts.push({k:"bell",st:1,x,y:y-18,w:bw,h:18,c:ENG[s1.e].color});}
+  y-=18;
+  for(let t=0;t<s1.t;t++)add({k:"tank",st:1,x:0,w:Math.max(60,wt+4),h:32,c:"#e8eef7",stripe:"#ff8a3d"});
+  add({k:"ring",st:1,x:0,w:54,h:6,c:"#667a99"});
+  add({k:"bell",st:2,x:0,w:20,h:14,c:ENG[s2.e].color});
+  for(let t=0;t<s2.t;t++)add({k:"tank",st:2,x:0,w:48,h:28,c:"#e8eef7",stripe:"#4ed1c0"});
+  const s3=D.eng.s3||{t:0,e:"whisper"};
+  if(s3.t>0){
+    add({k:"ring",st:3,x:0,w:40,h:5,c:"#667a99"});
+    add({k:"bell",st:3,x:0,w:16,h:12,c:ENG[s3.e].color});
+    for(let t=0;t<s3.t;t++)add({k:"tank",st:3,x:0,w:40,h:24,c:"#e8eef7",stripe:"#ffd24a"});
+  }
+  const busH=30;add({k:"bus",st:4,x:0,w:34,h:busH,c:"#b9c5dd"});
+  const by=y;
+  for(let p=0;p<D.eng.panels;p++){const side=p%2?1:-1,row=Math.floor(p/2);parts.push({k:"panel",st:4,x:side*(34/2+16),y:by+4+row*9,w:28,h:6,c:"#3f7fd0"});}
+  add({k:"nose",st:4,x:0,w:34,h:34,c:"#ff8a3d"});
+  return {parts,H:-y,W:Math.max(wt,60)+6};
+}
+function rocketSVG(D,sel){
+  const g=rocketGeom(D),vbH=Math.max(480,g.H+70),cx=150,base=vbH-30;
+  let s=`<svg viewBox="0 0 300 ${vbH}" role="img" aria-label="Rocket assembly drawing"><line x1="30" y1="${base}" x2="270" y2="${base}" stroke="#7fb4ff" stroke-width="2" stroke-dasharray="6 5"/><g transform="translate(${cx},${base})" stroke="#0a1422" stroke-width="2" stroke-linejoin="round">`;
+  g.parts.forEach(p=>{
+    const x=p.x-p.w/2,y=p.y;
+    if(p.k==="bell")s+=`<polygon points="${p.x-p.w/3},${y} ${p.x+p.w/3},${y} ${p.x+p.w/2},${y+p.h} ${p.x-p.w/2},${y+p.h}" fill="${p.c}"/>`;
+    else if(p.k==="nose")s+=`<path d="M${x},${y+p.h} Q${p.x},${y-6} ${p.x+p.w/2},${y+p.h} Z" fill="${p.c}"/>`;
+    else if(p.k==="tank")s+=`<rect x="${x}" y="${y}" width="${p.w}" height="${p.h}" rx="4" fill="${p.c}"/><rect x="${x}" y="${y+p.h/2-3}" width="${p.w}" height="6" fill="${p.stripe}" stroke="none"/>`;
+    else s+=`<rect x="${x}" y="${y}" width="${p.w}" height="${p.h}" rx="2" fill="${p.c}"/>`;
+  });
+  s+=`</g></svg>`;return s;
+}
+function portrait(role,size){
+  size=size||56;const c=ROLE[role].helmet;
+  let extra="";
+  if(role==="cmd")extra=`<path d="M22 14 l3 7 7 .6 -5.4 4.6 1.8 7 -6.4 -3.8 -6.4 3.8 1.8 -7 -5.4 -4.6 7 -.6z" fill="#fff" transform="translate(-7 -6) scale(.55)"/>`;
+  if(role==="eng")extra=`<circle cx="22" cy="26" r="6" fill="none" stroke="#0a1422" stroke-width="3"/><circle cx="38" cy="26" r="6" fill="none" stroke="#0a1422" stroke-width="3"/>`;
+  if(role==="sci")extra=`<line x1="30" y1="8" x2="30" y2="1" stroke="#0a1422" stroke-width="3"/><circle cx="30" cy="3" r="3.5" fill="#ffd24a" stroke="#0a1422" stroke-width="2"/>`;
+  if(role==="ops")extra=`<path d="M9 30 q0 -22 21 -22 q21 0 21 22" fill="none" stroke="#0a1422" stroke-width="3"/><rect x="5" y="28" width="7" height="12" rx="3" fill="#0a1422"/>`;
+  if(role==="dir")extra=`<path d="M12 12 q18 -14 36 0" fill="none" stroke="#e9f2ee" stroke-width="4"/>`;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="31" r="22" fill="${c}" stroke="#0a1422" stroke-width="3"/><ellipse cx="30" cy="31" rx="15" ry="12" fill="#10243f" stroke="#0a1422" stroke-width="2"/><circle cx="25" cy="30" r="2.4" fill="#fff"/><circle cx="35" cy="30" r="2.4" fill="#fff"/><path d="M26 36 q4 3 8 0" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/><ellipse cx="24" cy="24" rx="5" ry="2.5" fill="#fff" opacity=".35" transform="rotate(-20 24 24)"/>${extra}</svg>`;
+}
+function say(role,text,name){
+  const nm=name||(role==="dir"?ROLE.dir.who:charName(role));
+  return `<div class="say">${portrait(role,60)}<div class="bub"><span class="nm">${esc(nm)}</span>${text}</div></div>`;
+}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* ================= RENDER ================= */
+const screen=()=>$("#app");
+let lastKey="";
+function onState(){render();}
+function render(){
+  if(MODE==="none"){stopFlight();return rTitle();}
+  const s=S;
+  if(s.phase==="flight"){return rFlightScreen();}
+  stopFlight();lastKey="";
+  const fn={lobby:rLobby,story:rStory,design:rDesign,result:rResult}[s.phase];
+  (fn||rLobby)();
+  const fk=document.__fk;if(fk){const el=document.querySelector(`[data-f="${fk}"]`);if(el)el.focus();}
+}
+function crewStrip(){
+  return `<div class="crew">`+ROLES.map(r=>{
+    const st=seat(r),mine=st&&st.id===ME.id&&MODE==="crew",rd=S.ready&&S.ready[r];
+    const lobby=S.phase==="lobby"&&MODE==="crew";
+    const open=!st;
+    const inner=`${portrait(r,46)}<div class="who"><b>${esc(st&&st.name?st.name:ROLE[r].who)}</b><small>${ROLE[r].name}${open&&MODE==="crew"?" · open":""}${rd&&S.phase==="design"?" · ready":""}</small></div>`;
+    return lobby?`<button class="seat ${mine?"mine":""} ${open?"open":""}" data-act="seat" data-a="${r}" data-f="seat-${r}">${inner}</button>`:`<div class="seat ${mine?"mine":""} ${open&&MODE==="crew"?"open":""}">${inner}</div>`;
+  }).join("")+`</div>`;
+}
+function footer(){
+  return `<p class="muted" style="margin-top:36px;font-size:13px;max-width:78ch">A fictional story inspired by how early NASA test pilots became astronauts. Numbers are simplified game values, not mission data. The mission structure follows NASA's published approach: launch, space, ground and user segments, and Concept Maturity Levels from first idea to final design.</p>`;
+}
+
+/* ---------- title ---------- */
+function rTitle(){
+  const hasNet=!!Net.db;
+  const lbHtml=hasNet?`<div class="card" style="margin-top:22px;max-width:560px"><h3>Best crews so far</h3>${
+    UI.lbState==="ok"&&UI.lb.length?`<ol class="lb" style="padding:0;margin:8px 0 0">${UI.lb.map(r=>`<li><span>${esc(r.name||"Crew")}</span><span class="muted mono" style="font-size:11px">${esc(r.scen||"")}</span><span class="sc">${esc(r.score)}</span></li>`).join("")}</ol>`:
+    `<p class="muted" style="margin:8px 0 0">${UI.lbState==="slow"||UI.lbState==="err"?"The leaderboard could not be reached.":UI.lbState==="ok"?"Nobody has posted a score yet. Be the first.":"Loading..."}</p>`}</div>`:"";
+  const saved=lsGet("mc_code");
+  $("#app").innerHTML=`<section class="hero">
+    <div class="eyebrow">A co-op story about a first mission</div>
+    <h1>Mission<br>Candidate</h1>
+    <div class="tag">Four rookies. One whiteboard. A rocket that does not exist yet.</div>
+    <p>You have been picked for the astronaut corps. Before anyone flies, the mission has to be designed: a goal, a launch day, a rocket, instruments, a radio link and a budget. Play alone, or with up to three friends. Each person takes one seat and owns one part of the mission. Then you fly it, and something goes wrong.</p>
+    <div class="col" style="margin-top:18px;align-items:flex-start">
+      <label class="eyebrow" for="nm">Your name</label>
+      <input type="text" id="nm" maxlength="14" value="${esc(ME.name)}" autocomplete="off">
+      <div class="row" style="margin-top:6px">
+        <button class="btn go" data-act="solo" data-f="solo">Play solo</button>
+        ${hasNet?`<button class="btn alt" data-act="create" data-f="create">Start a crew</button>`:""}
+      </div>
+      ${hasNet?`<div class="row" style="margin-top:6px"><input type="text" id="code" maxlength="6" placeholder="Crew code" value="${esc(UI.code||"")}" style="max-width:150px;text-transform:uppercase;letter-spacing:.12em" autocomplete="off"><button class="btn" data-act="join" data-f="join">Join crew</button>${saved?`<button class="btn small" data-act="rejoin" data-a="${esc(saved)}">Rejoin ${esc(saved)}</button>`:""}</div>`:`<p class="muted" style="font-size:14px">Crews need a signed-in viewer with edit access to this page. Solo works for everyone.</p>`}
+      ${UI.err?`<p class="bad" style="font-weight:800">${esc(UI.err)}</p>`:""}
+    </div>
+    ${lbHtml}
+  </section>${footer()}`;
+}
+
+/* ---------- lobby ---------- */
+function rLobby(){
+  const host=isHost();
+  const solo=MODE==="solo";
+  $("#app").innerHTML=`${crewStrip()}
+  <section class="card">
+    <div class="eyebrow">${solo?"Solo flight":"Crew lobby"}</div>
+    ${solo?"":`<div class="row" style="align-items:flex-end;justify-content:space-between"><div><p class="muted" style="margin:0">Crew code. Friends enter this on the title screen.</p><div class="code">${esc(S.code)}</div></div><div class="row"><button class="btn small" data-act="copy" data-f="copy">Copy code</button><button class="btn small" data-act="leave">Leave</button></div></div>
+    <p class="muted">Tap an open seat above to take it. Seats nobody takes are covered by the mission lead, so you can start with fewer than four.</p>`}
+    <h2 style="margin:14px 0 4px">Choose the mission</h2>
+    <div class="grid" style="margin-top:10px">${Object.values(SCEN).map(c=>`<button class="opt" data-act="scen" data-a="${c.id}" data-f="sc-${c.id}" aria-pressed="${S.scen===c.id}" ${host?"":"disabled"}><span class="star">${c.level}</span><span class="nm">${c.name}</span><span class="ds">${c.blurb}</span><span class="sp">${c.dest} · budget $${c.budget}M</span></button>`).join("")}</div>
+    ${host?"":`<p class="muted" style="margin-top:10px">The mission lead picks the mission.</p>`}
+    <div class="row" style="margin-top:18px">${host?`<button class="btn go" data-act="begin" data-f="begin">Begin</button>`:`<span class="chip">Waiting for the mission lead</span><button class="btn small" data-act="takeover">Take over as lead</button>`}${solo?`<button class="btn small" data-act="leave">Back</button>`:""}</div>
+  </section>${footer()}`;
+}
+
+/* ---------- story ---------- */
+function rStory(){
+  const pages=briefing(),i=clamp(S.story||0,0,pages.length-1),p=pages[i],host=isHost(),last=i===pages.length-1;
+  const who=p.w==="dir"?"dir":p.w;
+  const text=p.w==="dir"&&!/^[“"]/.test(p.t)?`<i>${p.t}</i>`:p.t;
+  $("#app").innerHTML=`${crewStrip()}
+  <section class="card" style="max-width:820px"><div class="eyebrow">Chapter 1 · The whiteboard</div><h2 style="margin:6px 0 4px">${SCEN[S.scen].name}</h2>
+  ${say(who,text)}
+  <div class="row" style="margin-top:12px">${host?`<button class="btn go" data-act="story" data-f="story">${last?"Go to the design room":"Next"}</button>`:`<span class="chip">Waiting for the lead</span><button class="btn small" data-act="takeover">Take over as lead</button>`}<span class="muted mono" style="font-size:12px">${i+1} / ${pages.length}</span></div></section>${footer()}`;
+}
+
+/* ---------- design ---------- */
+function gauge(label,val,max,txt,state,crit){
+  return `<div class="g ${state||""} ${crit?"crit":""}"><div class="top"><span>${label}${crit?" ★":""}</span><b>${txt}</b></div><div class="bar"><i style="width:${clamp(val/max*100,0,100)}%"></i></div></div>`;
+}
+function gauges(X){
+  const c=X.sc.critical;
+  const st=(ok,warn)=>ok?"":warn?"warn":"bad";
+  return `<div class="gauges">`+
+    gauge("Delta-v",X.dvTotal,X.req*1.15,`${fmt(X.dvTotal)} / ${fmt(X.req)}`,X.dvTotal>=X.req*1.03?"":X.dvTotal>=X.req?"warn":"bad",c==="dv")+
+    gauge("Liftoff push",X.twr,2,`${fmt(X.twr,2)}×`,X.twr>=1.25?"":X.twr>=1?"warn":"bad")+
+    gauge("Power",Math.min(X.supply,X.draw),Math.max(X.supply,X.draw),`${fmt(X.draw,1)} / ${fmt(X.supply,1)} kW`,X.powerRatio>=1?"":"warn")+
+    gauge("Data",X.cap,Math.max(X.data,X.cap,1),`${fmt(X.cap)} / ${fmt(X.data)} Mb/s`,X.dataRatio>=1?"":X.dataRatio>=.7?"warn":"bad",c==="data")+
+    gauge("Radio link",X.cap,150*X.sc.dist,`${fmt(X.cap)} Mb/s`,X.cap>0?"":"bad",c==="link")+
+    gauge("Budget",X.cost,X.sc.budget,`$${fmt(X.cost)}M / $${X.sc.budget}M`,X.cost<=X.sc.budget*.92?"":X.cost<=X.sc.budget?"warn":"bad")+
+    gauge("Time",X.mo.m,24,`${X.mo.m} months`,"")+
+  `</div>`;
+}
+function stepper(label,val,key,min,max,role,help){
+  const can=canAct(role);
+  return `<div class="ctl"><span class="lbl">${label}</span><div class="stepper"><button class="btn small" data-act="step" data-a="${key}" data-b="-1" ${can&&val>min?"":"disabled"} aria-label="Fewer ${label}">−</button><span class="v">${val}</span><button class="btn small" data-act="step" data-a="${key}" data-b="1" ${can&&val<max?"":"disabled"} aria-label="More ${label}">+</button></div>${help?`<span class="muted" style="font-size:13px">${help}</span>`:""}</div>`;
+}
+function optBtn(act,a,name,ds,sp,sel,can,why,extra){
+  return `<button class="opt" data-act="${act}" data-a="${a}" data-f="${act}-${a}" aria-pressed="${!!sel}" ${can&&!why?"":"disabled"}><span class="nm">${name}</span>${extra||""}<span class="ds">${ds}</span><span class="sp">${sp}</span>${why?`<span class="why">${why}</span>`:""}</button>`;
+}
+function panelCmd(X){
+  const can=canAct("cmd"),sc=X.sc,D=S.design;
+  const maxPen=Math.max(...sc.windows.map(w=>w.pen),1);
+  return `<h3>1. What do we want to learn?</h3><p class="muted" style="margin:4px 0 8px">Every mission starts with a question. Your goal decides which instruments are worth their weight.</p>
+  <div class="grid">${sc.objectives.map((o,i)=>optBtn("obj",i,o.name,"Instruments that fit this goal count 1.4 times. Others count 0.8 times.","",D.cmd.objective===i,can)).join("")}</div>
+  <h3 style="margin-top:20px">2. Pick the launch day</h3><p class="muted" style="margin:4px 0 0">Planets and the Moon move. Some days need extra fuel. Some days leave a gap where no ground station can hear the spacecraft. Bar height is the extra delta-v you pay.</p>
+  <div class="win">${sc.windows.map((w,i)=>`<button class="day" data-act="win" data-a="${i}" data-f="win-${i}" aria-pressed="${D.cmd.window===i}" ${can?"":"disabled"} aria-label="Day ${i+1}, extra delta-v ${w.pen}${w.gap?", radio gap":""}"><small>${w.gap?"radio gap":""}</small><div class="b" style="height:${12+w.pen/maxPen*100}px"></div><span>+${w.pen}</span><span>Day ${i+1}</span></button>`).join("")}</div>`;
+}
+function panelEng(X){
+  const can=canAct("eng"),D=S.design.eng;
+  const engPick=(stage,cur)=>`<div class="grid" style="margin:8px 0">${Object.values(ENG).map(e=>optBtn("eng"+stage,e.id,e.name,e.ds,`${e.thrust} kN · ${e.isp} s · $${e.cost}M`,cur===e.id,can)).join("")}</div>`;
+  return `<p class="muted" style="margin:0 0 8px">Build the rocket from the top down. Delta-v is how much the rocket can change its speed. It depends on how much fuel you carry compared with what you lift. Liftoff push must beat the rocket's weight.</p>
+  <h3>Stage 1 (the big booster)</h3>${engPick(1,D.s1.e)}
+  ${stepper("Engines",D.s1.n,"s1n",1,5,"eng","More engines push harder and weigh more.")}${stepper("Fuel tanks",D.s1.t,"s1t",1,10,"eng","Each tank holds 10 t of fuel.")}
+  <h3 style="margin-top:14px">Stage 2 (the upper stage)</h3>${engPick(2,D.s2.e)}
+  ${stepper("Fuel tanks",D.s2.t,"s2t",1,5,"eng","Upper stages should be efficient.")}
+  <h3 style="margin-top:14px">Stage 3 (optional transfer stage)</h3><p class="muted" style="margin:4px 0 0">Trips to the Moon and Mars need a lot more delta-v than a trip to orbit. A third stage adds it. Zero tanks means no third stage.</p>${engPick(3,D.s3.e)}
+  ${stepper("Fuel tanks",D.s3.t,"s3t",0,4,"eng","Zero tanks means no third stage.")}
+  <h3 style="margin-top:14px">Spacecraft</h3><div class="grid" style="margin:8px 0">${Object.values(BUS).map(b=>optBtn("bus",b.id,b.name,b.ds,`${b.mass} t · $${b.cost}M`,D.bus===b.id,can)).join("")}</div>
+  ${stepper("Solar wings",D.panels,"pan",0,3,"eng","Each adds 1.5 kW and 0.15 t.")}
+  <p class="muted" style="margin-top:8px">Stage 1 gives ${fmt(X.dv1)} m/s, stage 2 gives ${fmt(X.dv2)} m/s${X.t3>0?` and stage 3 gives ${fmt(X.dv3)} m/s`:""}. Liftoff mass ${fmt(X.m01,1)} t. Payload ${fmt(X.payload,1)} t.</p>`;
+}
+function panelSci(X){
+  const can=canAct("sci"),sc=X.sc,sel=S.design.sci.inst||[];
+  return `<p class="muted" style="margin:0 0 8px">Every instrument adds science and also adds mass, power use, data and cost. Pick up to ${sc.maxInst}. Stars mark instruments that fit the goal${X.obj?`: ${X.obj.name.toLowerCase()}`:""}.</p>
+  <div class="grid">${INST[S.scen].map(i=>{
+    const on=sel.includes(i.id),full=sel.length>=sc.maxInst&&!on;
+    const match=X.obj&&i.tags.includes(X.obj.tag);
+    return optBtn("inst",i.id,i.name,i.ds,`science ${i.sci} · ${i.mass} t · ${i.pwr} kW · ${i.data} Mb/s · $${i.cost}M`,on,can,full?"Instrument limit reached":"",match?`<span class="star">★ fits the goal</span>`:"");
+  }).join("")}</div><p class="muted" style="margin-top:10px">${sel.length} of ${sc.maxInst} chosen.</p>`;
+}
+function panelOps(X){
+  const can=canAct("ops"),D=S.design.ops;
+  return `<p class="muted" style="margin:0 0 8px">Data only helps if it gets home. The radio link depends on the dish on the spacecraft, the ground stations that listen, and how far away the target is.</p>
+  <h3>Ground stations</h3><div class="grid" style="margin:8px 0">${Object.values(GND).map(g=>optBtn("gnd",g.id,g.name,g.ds,`$${g.cost}M · backup ${g.backup?"yes":"no"}`,D.ground===g.id,can,g.reach.includes(S.scen)?"":"Cannot reach "+X.sc.dest)).join("")}</div>
+  <h3>Spacecraft dish</h3><div class="grid" style="margin:8px 0">${Object.values(ANT).map(a=>optBtn("ant",a.id,a.name,a.ds,`${a.rate} Mb/s · ${a.mass} t · ${a.pwr} kW · $${a.cost}M`,D.antenna===a.id,can)).join("")}</div>
+  <h3>How long should we operate?</h3><div class="row" style="margin:8px 0">${MONTHS.map(m=>`<button class="btn small ${D.months===m.m?"go":""}" data-act="mon" data-a="${m.m}" data-f="mon-${m.m}" ${can?"":"disabled"}>${m.m} months</button>`).join("")}</div>
+  <p class="muted">Longer missions return more science and cost $${MCOST}M per month.</p>
+  <div class="tscroll"><table><tr><th>Where the money goes</th><th>$M</th></tr><tr><td>Rocket</td><td>${X.costParts.launcher}</td></tr><tr><td>Spacecraft and dish</td><td>${X.costParts.craft}</td></tr><tr><td>Instruments</td><td>${X.costParts.science}</td></tr><tr><td>Ground and operations</td><td>${X.costParts.ground}</td></tr><tr><th>Total of ${X.sc.budget}</th><th>${fmt(X.cost)}</th></tr></table></div>`;
+}
+function rDesign(){
+  const X=derive(S),host=isHost(),role=UI.tab,mine=myRole();
+  const panelFn={cmd:panelCmd,eng:panelEng,sci:panelSci,ops:panelOps}[role];
+  const holder=seat(role),canHere=canAct(role);
+  const note=!canHere?`<p class="chip warn" style="display:inline-block;margin-bottom:10px">${esc(charName(role))} is working on this seat</p>`:"";
+  // radio chatter: most urgent problem
+  const order={block:0,warn:1,soft:2,info:3};
+  const probs=[...X.problems].sort((a,b)=>order[a.sev]-order[b.sev]);
+  const pr=probs[0];
+  const chat=pr?say(pr.role,esc(pr.msg)):say("cmd","Everything checks out. Let us go and tell the Director.");
+  const rdy=S.ready||{};
+  const seated=ROLES.filter(r=>seat(r)||MODE==="solo");
+  const allReady=MODE==="solo"||ROLES.filter(r=>seat(r)).every(r=>rdy[r]);
+  const warns=X.problems.filter(p=>p.sev==="warn");
+  const launchLabel=warns.length&&!X.blocked?"Launch anyway":"Launch";
+  const tabs=ROLES.map(r=>`<button class="tab" role="tab" data-act="tab" data-a="${r}" data-f="tab-${r}" aria-selected="${role===r}">${portrait(r,34)}<span>${ROLE[r].name}${rdy[r]&&MODE==="crew"?" ✓":""}</span></button>`).join("");
+  $("#app").innerHTML=`${crewStrip()}
+  <section>
+    <div class="eyebrow">Chapter 2 · The design room · ${X.sc.name}</div>
+    <h2 style="margin:4px 0 12px">Build the mission</h2>
+    ${gauges(X)}
+    <div class="design"><div class="card"><div class="tabs" role="tablist">${tabs}</div>
+      <h3 style="color:${ROLE[role].color};margin-bottom:4px">${ROLE[role].name}: ${ROLE[role].short}</h3>${note}
+      ${panelFn(X)}
+      ${MODE==="crew"&&mine?`<div class="row" style="margin-top:16px"><button class="btn ${rdy[mine]?"alt":""}" data-act="ready" data-f="ready">${rdy[mine]?"I'm ready ✓":"I'm ready"}</button><span class="muted" style="font-size:13px">Tell the lead your part is done.</span></div>`:""}
+    </div>
+    <aside class="vab card"><h3>The rocket</h3>${rocketSVG(S.design)}
+      <div class="mono muted" style="font-size:11px">Stage 2 on top. Stage 1 below. Nose cone covers the spacecraft.</div></aside></div>
+    ${chat}
+    <div class="row" style="margin-top:10px">
+      ${host?`<button class="btn go" data-act="launch" data-f="launch" ${X.blocked||!allReady?"disabled":""}>${launchLabel}</button>${X.blocked?`<span class="chip bad">${X.problems.filter(p=>p.sev==="block").length} to fix first</span>`:!allReady?`<span class="chip warn">Waiting for crew</span>`:warns.length?`<span class="chip warn">This design will not make it</span>`:`<span class="chip ok">Go for launch</span>`}`:`<span class="chip">Waiting for the lead to launch</span><button class="btn small" data-act="takeover">Take over as lead</button>`}
+      ${MODE==="crew"?`<span class="muted mono" style="font-size:12px">Crew code ${esc(S.code)}</span>`:`<button class="btn small" data-act="leave">Quit</button>`}
+    </div>
+  </section>${footer()}`;
+}
+
+/* ---------- flight ---------- */
+const FL={raf:0,t0:0,cv:null,revealed:false,sparks:[]};
+function stopFlight(){cancelAnimationFrame(FL.raf);FL.raf=0;}
+function anim(X){const o=flightOutcome(X);return {out:o,end:o.kind==="ok"?22:o.kind==="pad"?9:17};}
+function rFlightScreen(){
+  const key="flight-"+S.flight.launchAt;
+  const X=derive(S);
+  if(lastKey!==key||!$("#fcv")){
+    lastKey=key;stopFlight();FL.revealed=false;FL.sparks=[];
+    $("#app").innerHTML=`${crewStrip()}<section><div class="eyebrow">Chapter 3 · Launch day · ${X.sc.name}</div>
+      <canvas id="fcv" width="800" height="450" aria-label="Launch animation"></canvas>
+      <div id="fpanel"></div></section>`;
+    FL.cv=$("#fcv");FL.t0=S.flight.launchAt||Date.now();
+    FL.raf=requestAnimationFrame(frame);
+  }
+  fPanel();
+}
+function fPanel(){
+  const X=derive(S),a=anim(X),el=(Date.now()-S.flight.launchAt)/1000,host=isHost();
+  const done=el>=a.end;
+  let html="";
+  if(!done){html=`<p class="muted" style="margin-top:12px">Everyone watch the board. Events open when the craft reaches orbit.</p>`;}
+  else if(a.out.kind!=="ok"){
+    html=`<div class="card" style="margin-top:14px"><h2 class="bad">${a.out.kind==="pad"?"She never left the pad":"Out of fuel"}</h2>
+      ${say(a.out.kind==="pad"?"eng":"eng",a.out.kind==="pad"?`I told you. Liftoff push was ${fmt(X.twr,2)}. It has to be above 1.`:`We ran out of delta-v ${fmt((1-a.out.frac)*100)}% short of ${X.sc.dest}.`)}
+      <div class="row">${host?`<button class="btn go" data-act="debrief" data-f="debrief">See the report</button>`:`<span class="chip">Waiting for the lead</span><button class="btn small" data-act="takeover">Take over as lead</button>`}</div></div>`;
+  }else{
+    const allIn=ROLES.every(r=>evChoice(S,r)!=null);
+    html=`<h2 style="margin:16px 0 4px">Orbit! Now the surprises.</h2><p class="muted">Each seat gets one decision. ${MODE==="crew"?"You can suggest an answer on a teammate's card.":"You are covering every seat."}</p>
+    <div class="events">${ROLES.map(r=>evCard(r,X)).join("")}</div>
+    <div class="row" style="margin-top:16px">${host?`<button class="btn go" data-act="debrief" data-f="debrief" ${allIn?"":"disabled"}>Mission debrief</button>${allIn?"":`<span class="chip warn">Waiting for decisions</span>`}`:`<span class="chip">${allIn?"All decisions in. Waiting for the lead.":"Waiting for decisions"}</span><button class="btn small" data-act="takeover">Take over as lead</button>`}</div>`;
+  }
+  const p=$("#fpanel");if(p)p.innerHTML=html;
+}
+function evCard(r,X){
+  const E=EVENTS[r],c=evChoice(S,r),can=canAct(r),me=myRole();
+  const sug=(S.events&&S.events[r]&&S.events[r].sug)||{};
+  let body="";
+  if(c==null){
+    body=`<div class="ch">${E.opts.map((o,i)=>`<button class="btn small" style="text-align:left;font-family:var(--body);font-weight:800" data-act="choose" data-a="${r}" data-b="${i}" data-f="ch-${r}-${i}" ${can?"":"disabled"}>${"ABC"[i]}. ${o.l}</button>`).join("")}</div>`;
+    const ss=Object.entries(sug).map(([k,v])=>`${charName(k)} suggests ${"ABC"[v]}`);
+    if(ss.length)body+=`<div class="sug">${esc(ss.join(" · "))}</div>`;
+    if(MODE==="crew"&&me&&me!==r)body+=`<div class="row" style="margin-top:8px"><span class="muted mono" style="font-size:11px">SUGGEST</span>${E.opts.map((o,i)=>`<button class="btn small" data-act="suggest" data-a="${r}" data-b="${i}" aria-label="Suggest option ${"ABC"[i]}">${"ABC"[i]}</button>`).join("")}</div>`;
+    if(!can)body+=`<p class="muted" style="font-size:13px;margin-top:8px">Waiting for ${esc(charName(r))}.</p>`;
+  }else{
+    const R=evResult(X,r,c);
+    body=`<div class="res"><div class="pips" aria-label="${R.s} of 3">${"●".repeat(R.s)}${"○".repeat(3-R.s)}</div><p style="margin:6px 0 0"><b>${"ABC"[c]}.</b> ${E.opts[c].l}</p><p style="margin:6px 0 0">${R.t}</p></div>`;
+  }
+  return `<div class="card ev"><div class="row">${portrait(r,44)}<div><div class="eyebrow">${ROLE[r].name}</div><b>${esc(charName(r))}</b></div></div><h3>${E.title}</h3><p style="margin:0">${E.text(X)}</p>${body}</div>`;
+}
+/* canvas flight animation */
+const lerp=(a,b,t)=>a+(b-a)*t, ease=t=>t<0?0:t>1?1:t*t*(3-2*t);
+function skyCol(p){const a=[104,176,225],b=[6,10,28];const t=clamp(p*1.5,0,1);return `rgb(${fmt(lerp(a[0],b[0],t))},${fmt(lerp(a[1],b[1],t))},${fmt(lerp(a[2],b[2],t))})`;}
+function frame(){
+  if(!FL.cv||!document.contains(FL.cv)){return;}
+  const X=derive(S),a=anim(X),t=(Date.now()-FL.t0)/1000,ctx=FL.cv.getContext("2d"),W=800,H=450;
+  drawFlight(ctx,W,H,X,a,t);
+  if(!FL.revealed&&t>=a.end){FL.revealed=true;fPanel();}
+  else if(t<a.end&&Math.floor(t)!==FL.lastSec){FL.lastSec=Math.floor(t);}
+  if(t<a.end+.5||!FL.revealed)FL.raf=requestAnimationFrame(frame);else FL.raf=requestAnimationFrame(frame);
+}
+function drawFlight(ctx,W,H,X,a,t){
+  const g=rocketGeom(S.design),sc=clamp(150/g.H,.45,1.1);
+  const out=a.out;
+  // progress along ascent
+  let p=0,stage=1,burning=false,sep=false;
+  if(out.kind!=="pad"){
+    const max=out.kind==="ok"?1:out.frac;
+    if(t>=3&&t<10){p=.45*ease((t-3)/7);burning=true;}
+    else if(t>=10&&t<11){p=.45;sep=true;stage=2;}
+    else if(t>=11){p=.45+.55*ease((t-11)/6);stage=2;burning=t<17;sep=true;}
+    p=Math.min(p,max*.9999+(out.kind==="ok"?.0001:0));
+    if(out.kind==="short"&&p>=max-0.001){burning=false;}
+  }else{burning=t>=3&&t<5.5;}
+  const orbitView=out.kind==="ok"&&t>=17;
+  // sky
+  ctx.fillStyle=orbitView?"#050a1c":skyCol(p);ctx.fillRect(0,0,W,H);
+  const starA=orbitView?1:clamp((p-.2)*1.6,0,1);
+  ctx.fillStyle="#fff";ctx.globalAlpha=starA;
+  for(let i=0;i<70;i++){const x=(i*127%800),y=((i*53)%450+(orbitView?0:p*600))%450;ctx.fillRect(x,y,i%3?1.5:2.5,i%3?1.5:2.5);}
+  ctx.globalAlpha=1;
+  if(!orbitView){
+    // ground and tower scroll away
+    const gy=H-70+p*900;
+    if(gy<H+20){
+      ctx.fillStyle="#2c5a45";ctx.fillRect(0,gy,W,H);
+      ctx.fillStyle="#1d3b2e";ctx.fillRect(0,gy,W,10);
+      ctx.fillStyle="#5a6b82";ctx.fillRect(W/2+70,gy-170,14,170);ctx.fillRect(W/2+55,gy-170,30,8);
+    }
+    if(p>.3){const hz=lerp(H+60,H-150,clamp((p-.3)/.7,0,1));ctx.fillStyle="#1f5fa8";ctx.beginPath();ctx.arc(W/2,hz+1300,1300,0,7);ctx.fill();ctx.strokeStyle="#7fd3ff";ctx.lineWidth=3;ctx.stroke();}
+    // rocket
+    const rx=W/2,ry=H-70+(out.kind==="pad"?0:-p*40)-(p>0?Math.min(p*240,160):0);
+    const wob=out.kind==="pad"&&t>=3?Math.sin(t*40)*Math.min(3,(t-3)*2):0;
+    ctx.save();ctx.translate(rx+wob,ry);ctx.scale(sc,sc);
+    if(burning||out.kind==="pad"&&t>=3&&t<5.5){
+      const b2=g.parts.find(q=>q.k==="bell"&&q.st===2),fy=sep&&b2?b2.y+b2.h:0,fw=sep?9:14;
+      const fl=(sep?12:20)+Math.random()*(sep?14:26);ctx.fillStyle="#ffb066";ctx.beginPath();ctx.moveTo(-fw,fy);ctx.lineTo(0,fy+fl);ctx.lineTo(fw,fy);ctx.fill();ctx.fillStyle="#ffe9a8";ctx.beginPath();ctx.moveTo(-fw/2,fy);ctx.lineTo(0,fy+fl*.55);ctx.lineTo(fw/2,fy);ctx.fill();
+    }
+    g.parts.forEach(pt=>{
+      if(sep&&pt.st===1){ // stage 1 falls away
+        const dt=Math.max(0,t-10);ctx.save();ctx.translate(dt*8,dt*dt*60);ctx.rotate(dt*.3);drawPart(ctx,pt);ctx.restore();
+      }else if(!(out.kind==="pad"&&t>=5.5)) drawPart(ctx,pt);
+    });
+    ctx.restore();
+    if(out.kind==="pad"&&t>=5.5&&t<9){const k=(t-5.5)/3.5;for(let i=0;i<24;i++){const an=i*.26,r=k*130;ctx.fillStyle=`rgba(${255},${160-i*3},60,${1-k})`;ctx.beginPath();ctx.arc(W/2+Math.cos(an)*r,H-80+Math.sin(an)*r*.6,8+k*10,0,7);ctx.fill();}}
+    // smoke at liftoff
+    if(t>=2.2&&t<8&&out.kind!=="pad"){ctx.fillStyle="rgba(255,255,255,.35)";for(let i=0;i<6;i++){ctx.beginPath();ctx.arc(W/2+(i-2.5)*26+Math.sin(t*3+i)*6,H-62-i*2,16+(t-2.2)*5,0,7);ctx.fill();}}
+  }else{
+    // orbit / transfer view
+    const k=ease((t-17)/4.5);
+    const ex=W*.28,ey=H*.55;
+    ctx.fillStyle="#1f5fa8";ctx.beginPath();ctx.arc(ex,ey,80,0,7);ctx.fill();ctx.strokeStyle="#7fd3ff";ctx.lineWidth=3;ctx.stroke();
+    ctx.fillStyle="#3d9b6a";ctx.beginPath();ctx.arc(ex-22,ey-12,22,0,7);ctx.fill();ctx.beginPath();ctx.arc(ex+30,ey+24,14,0,7);ctx.fill();
+    let dx,dy;
+    if(X.sc.id==="leo"){
+      ctx.strokeStyle="#ffd24a55";ctx.lineWidth=2;ctx.setLineDash([6,6]);ctx.beginPath();ctx.arc(ex,ey,104,0,7);ctx.stroke();ctx.setLineDash([]);
+      const an=-1.2+k*5+(t-17)*.4;dx=ex+Math.cos(an)*104;dy=ey+Math.sin(an)*104;
+    }else{
+      const tx=X.sc.id==="moon"?W*.78:W*.9,ty=X.sc.id==="moon"?H*.3:H*.2;
+      ctx.fillStyle=X.sc.id==="moon"?"#c9ced9":"#d9694a";ctx.beginPath();ctx.arc(tx,ty,X.sc.id==="moon"?22:30,0,7);ctx.fill();
+      ctx.strokeStyle="#ffd24a88";ctx.lineWidth=2;ctx.setLineDash([6,6]);ctx.beginPath();ctx.moveTo(ex+80,ey-10);ctx.quadraticCurveTo(W*.55,ey-150,tx-30,ty+10);ctx.stroke();ctx.setLineDash([]);
+      const u=k,bx=lerp(lerp(ex+80,W*.55,u),lerp(W*.55,tx-30,u),u),by=lerp(lerp(ey-10,ey-150,u),lerp(ey-150,ty+10,u),u);dx=bx;dy=by;
+    }
+    ctx.fillStyle="#ff8a3d";ctx.strokeStyle="#0a1422";ctx.lineWidth=3;ctx.beginPath();ctx.arc(dx,dy,8,0,7);ctx.fill();ctx.stroke();
+    ctx.fillStyle="#3f7fd0";ctx.fillRect(dx-20,dy-3,12,6);ctx.fillRect(dx+8,dy-3,12,6);
+  }
+  // HUD
+  ctx.fillStyle="#0a1422cc";ctx.fillRect(10,10,230,64);
+  ctx.fillStyle="#eef3fb";ctx.font="700 14px 'Space Mono',monospace";
+  const spd=out.kind==="pad"?0:Math.round(p*X.dvTotal*(out.kind==="ok"?1:1));
+  ctx.fillText(t<3?`T-${Math.ceil(3-t)}`:`T+${fmt(t-3,1)} s`,20,32);
+  ctx.fillText(`SPEED ${spd} m/s`,20,50);ctx.fillText(`STAGE ${stage}  ${orbitView?"COASTING":burning?"BURN":sep&&t<11?"SEPARATION":""}`,20,68);
+  // banners
+  ctx.textAlign="center";ctx.font="400 38px 'Bowlby One',sans-serif";
+  if(t<3){ctx.fillStyle="#ffd24a";ctx.fillText(t<2.2?"COUNTDOWN":"LIFTOFF",W/2,80);}
+  if(out.kind==="short"&&t>=a.end-4){ctx.fillStyle="#ff5d6c";ctx.fillText("OUT OF FUEL",W/2,120);}
+  if(out.kind==="pad"&&t>=5.5){ctx.fillStyle="#ff5d6c";ctx.fillText("NO LIFTOFF",W/2,120);}
+  if(orbitView&&t>=20){ctx.fillStyle="#4ed1c0";ctx.fillText(X.sc.id==="leo"?"IN ORBIT":"ON ITS WAY",W/2,60);}
+  ctx.textAlign="left";
+}
+function drawPart(ctx,p){
+  const x=p.x-p.w/2,y=p.y;ctx.strokeStyle="#0a1422";ctx.lineWidth=2;ctx.fillStyle=p.c;
+  if(p.k==="bell"){ctx.beginPath();ctx.moveTo(p.x-p.w/3,y);ctx.lineTo(p.x+p.w/3,y);ctx.lineTo(p.x+p.w/2,y+p.h);ctx.lineTo(p.x-p.w/2,y+p.h);ctx.closePath();ctx.fill();ctx.stroke();}
+  else if(p.k==="nose"){ctx.beginPath();ctx.moveTo(x,y+p.h);ctx.quadraticCurveTo(p.x,y-6,p.x+p.w/2,y+p.h);ctx.closePath();ctx.fill();ctx.stroke();}
+  else if(p.k==="tank"){ctx.fillRect(x,y,p.w,p.h);ctx.strokeRect(x,y,p.w,p.h);ctx.fillStyle=p.stripe;ctx.fillRect(x,y+p.h/2-3,p.w,6);}
+  else{ctx.fillRect(x,y,p.w,p.h);ctx.strokeRect(x,y,p.w,p.h);}
+}
+
+/* ---------- result ---------- */
+function rResult(){
+  stopFlight();
+  const R=S.result?{...evaluate(S)}:evaluate(S),host=isHost();
+  const lines=reportLines(R);
+  $("#app").innerHTML=`${crewStrip()}
+  <section><div class="eyebrow">Chapter 4 · Debrief · ${R.X.sc.name}</div>
+  <div class="big ${R.lost?"bad":"good"}" style="margin:6px 0 10px">${R.rating}</div>
+  <p style="font-size:18px;font-weight:700;max-width:66ch">${esc(epilogue(R,S))}</p>
+  <div class="score"><div><b>${R.total}</b><span>Overall</span></div><div><b>${R.scSuccess}</b><span>Mission success /40</span></div><div><b>${R.scSci}</b><span>Science /25</span></div><div><b>${R.eff}</b><span>Resources /15</span></div><div><b>${R.dec}</b><span>Decisions /20</span></div></div>
+  <div class="design" style="margin-top:6px"><div class="card"><h3>Why it went this way</h3><ul class="plain" style="margin-top:8px">${lines.map(l=>`<li>${esc(l)}</li>`).join("")}</ul>
+    <h3 style="margin-top:18px">A real mission like yours</h3><p style="margin-top:6px">Your concept resembles ${esc(R.X.sc.analog)}.</p></div>
+    <div class="card"><h3>Your rocket</h3>${rocketSVG(S.design)}</div></div>
+  <div class="row" style="margin-top:18px">
+    ${host?`<button class="btn go" data-act="again" data-f="again">Redesign and fly again</button>`:`<span class="chip">The lead can restart</span><button class="btn small" data-act="takeover">Take over as lead</button>`}
+    ${Net.db?`<button class="btn alt" data-act="post" data-f="post" ${UI.posted===S.code+":"+(S.flight.launchAt||0)?"disabled":""}>${UI.posted===S.code+":"+(S.flight.launchAt||0)?"Posted ✓":"Post score"}</button>`:""}
+    <button class="btn small" data-act="leave">${MODE==="solo"?"Back to title":"Leave crew"}</button>
+  </div>
+  ${Net.db&&UI.lbState==="ok"&&UI.lb.length?`<div class="card" style="margin-top:20px;max-width:560px"><h3>Best crews so far</h3><ol class="lb" style="padding:0;margin:8px 0 0">${UI.lb.map(r=>`<li><span>${esc(r.name||"Crew")}</span><span class="muted mono" style="font-size:11px">${esc(r.scen||"")}</span><span class="sc">${esc(r.score)}</span></li>`).join("")}</ol></div>`:""}
+  </section>${footer()}`;
+}
+
+/* ================= ACTIONS ================= */
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b||b.disabled)return;
+  document.__fk=b.dataset.f||null;
+  act(b.dataset.act,b.dataset.a,b.dataset.b);
+});
+document.addEventListener("input",e=>{if(e.target.id==="nm"){ME.name=e.target.value.trim()||"Pilot";lsSet("mc_name",ME.name);}if(e.target.id==="code")UI.code=e.target.value;});
+function setDesign(role,p){patch({design:{[role]:p}});}
+function act(name,a,b){
+  const D=S&&S.design;
+  switch(name){
+    case "solo":MODE="solo";ME.id="local";S=newState("leo","local","SOLO");S.crewName=ME.name;UI.tab="cmd";render();break;
+    case "create":createCrew();break;
+    case "join":{const el=$("#code");joinCrew(el?el.value:UI.code);break;}
+    case "rejoin":joinCrew(a);break;
+    case "leave":if(MODE==="crew"&&S&&seat(myRole())&&S.phase!=="result"){const r=myRole();patch({seats:{[r]:null}});}leave();break;
+    case "copy":try{navigator.clipboard.writeText(S.code).then(()=>toast("Code copied"),()=>toast("Code: "+S.code));}catch(e){toast("Code: "+S.code);}break;
+    case "seat":{const mine=myRole(),st=seat(a);
+      if(st&&st.id===ME.id){patch({seats:{[a]:null}});}
+      else if(!st){const p={seats:{[a]:{id:ME.id,name:ME.name}}};if(mine)p.seats[mine]=null;patch(p);UI.tab=a;}
+      break;}
+    case "scen":if(isHost()){const f=newState(a,S.hostId,S.code);patch({scen:a,design:f.design});}break;
+    case "begin":if(isHost())patch({phase:"story",story:0});break;
+    case "story":{if(!isHost())break;const n=briefing().length;if((S.story||0)>=n-1)patch({phase:"design"});else patch({story:(S.story||0)+1});break;}
+    case "takeover":if(MODE==="crew")patch({hostId:ME.id});break;
+    case "tab":UI.tab=a;render();break;
+    case "obj":if(canAct("cmd"))setDesign("cmd",{objective:+a});break;
+    case "win":if(canAct("cmd"))setDesign("cmd",{window:+a});break;
+    case "eng1":if(canAct("eng"))setDesign("eng",{s1:{e:a}});break;
+    case "eng2":if(canAct("eng"))setDesign("eng",{s2:{e:a}});break;
+    case "eng3":if(canAct("eng"))setDesign("eng",{s3:{e:a}});break;
+    case "bus":if(canAct("eng"))setDesign("eng",{bus:a});break;
+    case "step":{if(!canAct("eng"))break;const d=+b,E=D.eng;
+      if(a==="s1n")setDesign("eng",{s1:{n:clamp(E.s1.n+d,1,5)}});
+      if(a==="s1t")setDesign("eng",{s1:{t:clamp(E.s1.t+d,1,10)}});
+      if(a==="s2t")setDesign("eng",{s2:{t:clamp(E.s2.t+d,1,5)}});
+      if(a==="s3t")setDesign("eng",{s3:{t:clamp((E.s3?E.s3.t:0)+d,0,4)}});
+      if(a==="pan")setDesign("eng",{panels:clamp(E.panels+d,0,3)});
+      break;}
+    case "inst":{if(!canAct("sci"))break;let l=[...(D.sci.inst||[])];if(l.includes(a))l=l.filter(x=>x!==a);else if(l.length<SCEN[S.scen].maxInst)l.push(a);setDesign("sci",{inst:l});break;}
+    case "gnd":if(canAct("ops"))setDesign("ops",{ground:a});break;
+    case "ant":if(canAct("ops"))setDesign("ops",{antenna:a});break;
+    case "mon":if(canAct("ops"))setDesign("ops",{months:+a});break;
+    case "ready":{const r=myRole();if(r)patch({ready:{[r]:!(S.ready&&S.ready[r])}});break;}
+    case "launch":{if(!isHost())break;const X=derive(S);if(X.blocked)break;patch({phase:"flight",flight:{launchAt:Date.now()+500},events:{...NOEV}});break;}
+    case "choose":if(canAct(a)&&evChoice(S,a)==null)patch({events:{[a]:{choice:+b}}});break;
+    case "suggest":{const me=myRole();if(me&&me!==a)patch({events:{[a]:{sug:{[me]:+b}}}});break;}
+    case "debrief":if(isHost())patch({phase:"result",result:{at:Date.now()}});break;
+    case "again":if(isHost()){const r=resetDesign(S);patch({phase:"design",...r});UI.posted=null;}break;
+    case "post":postScore();break;
+  }
+}
+async function postScore(){
+  if(!Net.db||!S)return;
+  const key=S.code+":"+(S.flight.launchAt||0);if(UI.posted===key)return;
+  const R=evaluate(S);UI.posted=key;render();
+  try{await Net.db.doc("board/"+S.code.toLowerCase()+"-"+(S.flight.launchAt||0)).set({name:(S.crewName&&MODE==="crew"?S.crewName:ME.name+" (solo)").slice(0,28),score:R.total,scen:SCEN[S.scen].name,at:Date.now()});toast("Score posted");}
+  catch(e){UI.posted=null;toast("Could not post the score.");render();}
+}
+render();
+initNet();
+</script>
+
+</body></html>
